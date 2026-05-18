@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> 
+<title>Bacheca Arrivi | Marina Porto Antico</title>
+
+<link rel="manifest" href="manifest.json"> 
+<meta name="theme-color" content="#0b3954">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+    --primary-color: #0b3954;
+    --secondary-color: #087e8b;
+    --bg-color: #f4f4f9;
+    --text-color: #333;
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+.form-section {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+}
+
+.board-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.board-column {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 180px;
+}
+
+h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+}
+
+details.archive-section {
+    background: #eaeaea;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+details.archive-section summary {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    outline: none;
+}
+
+details.archive-section summary::before {
+    content: "▶";
+    font-size: 0.7em;
+    margin-right: 10px;
+    color: var(--secondary-color);
+    transition: transform 0.2s;
+}
+
+details[open].archive-section summary::before {
+    transform: rotate(90deg);
+}
+
+.archive-scroll {
+    max-height: 600px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 5px;
+}
+
+/* Stile per le sottosezioni degli anni nell'archivio */
+.archive-year-block {
+    margin-bottom: 25px;
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.archive-year-title {
+    margin: 0 0 15px 0;
+    color: var(--primary-color);
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    border: none;
+    border-radius: 6px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    background: var(--secondary-color);
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.main-btn {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.boat-card {
+    background: #fff;
+    border-left: 5px solid var(--secondary-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.boat-card.arrived {
+    border-left-color: #27ae60;
+    background: #f7fff9;
+}
+
+.boat-card.archived {
+    border-left-color: #7f8c8d;
+    background: #fafafa;
+    opacity: 0.9;
+}
+
+.boat-info h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+/* Stile per il sottotitolo Cantiere/Modello */
+.boat-model {
+    margin: 2px 0 8px 0;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.boat-info p {
+    margin: 3px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.boat-note {
+    margin-top: 8px !important;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-style: italic;
+    color: #444 !important;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.btn-arrived { background: #27ae60; }
+.btn-archive { background: #f39c12; }
+
+.status {
+    max-width: 1250px;
+    margin: 0 auto 15px auto;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #eaf7f8;
+    color: #0b3954;
+    font-weight: bold;
+}
+
+.empty-message {
+    color: #777;
+    font-style: italic;
+}
+
+.status.error {
+    background: #fde8e8;
+    color: #c0392b;
+    border: 1px solid #e74c3c;
+}
+
+@media (max-width: 768px) {
+    body { padding: 12px; }
+    .container { flex-direction: column; }
+    .boat-card { flex-direction: column; }
+    .actions button { width: 100%; }
+}
+/* --- Stile per il Badge della Data --- */
+.date-badge {
+    display: inline-block;
+    background-color: #eaf7f8;
+    color: #087e8b;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 15px;
+    margin: 8px 0;
+    border: 1px solid #bce4e6;
+}
+
+/* Colore del badge quando la barca è in porto */
+.boat-card.arrived .date-badge {
+    background-color: #e8f8f5;
+    color: #27ae60;
+    border-color: #a3e4d7;
+}
+
+/* Colore del badge quando è archiviata */
+.boat-card.archived .date-badge {
+    background-color: #f0f3f4;
+    color: #7f8c8d;
+    border-color: #d5dbdb;
+}
+/* Colore del badge quando la barca è in ritardo */
+.date-badge.late {
+    background-color: #fde8e8;
+    color: #c0392b;
+    border-color: #e74c3c;
+    font-weight: 900;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+   <h1>Marina Porto Antico - Gestione Arrivi</h1>
+</header>
+
+<div class="status" id="connectionStatus">
+   Connessione Supabase in corso...
+</div>
+
+<div class="container">
+
+    <div class="form-section">
+        <h2>Nuovo Arrivo</h2>
+
+        <form id="boatForm">
+            <div class="form-group">
+                <label for="boatName">Nome Barca</label>
+                <input type="text" id="boatName" required placeholder="Es. Stella Polare">
+            </div>
+
+            <div class="form-group">
+                <label for="boatModel">Cantiere / Modello</label>
+                <input type="text" id="boatModel" placeholder="Es. Beneteau Oceanis 41 / Riva 38">
+            </div>
+
+            <div class="form-group">
+                <label for="arrivalDate">Data di Arrivo</label>
+                <input type="date" id="arrivalDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mooring">Ormeggio Previsto</label>
+                <input type="text" id="mooring" required placeholder="Es. Molo A, Posto 12">
+            </div>
+
+            <div class="form-group">
+                <label for="boatType">Tipo Barca</label>
+                <select id="boatType" required>
+                    <option value="">Seleziona</option>
+                    <option value="Motore">Motore</option>
+                    <option value="Vela">Vela</option>
+                    <option value="Catamarano">Catamarano</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="boatLength">Lunghezza (metri)</label>
+                <input type="number" id="boatLength" step="0.01" min="0" placeholder="Es. 12.50">
+            </div>
+
+            <div class="form-group">
+                <label for="boatWidth">Larghezza (metri)</label>
+                <input type="number" id="boatWidth" step="0.01" min="0" placeholder="Es. 4.20">
+            </div>
+
+            <div class="form-group">
+                <label for="boatNotes">Note Operative</label>
+                <textarea id="boatNotes" rows="3" placeholder="Es. Necessita di assistenza all'ormeggio col gommone..."></textarea>
+            </div>
+
+            <button class="main-btn" type="submit">Aggiungi in Bacheca</button>
+        </form>
+    </div>
+
+    <div class="board-section">
+
+        <div class="board-column">
+            <h2>1. Barche in Arrivo</h2>
+            <div id="incomingList"></div>
+        </div>
+
+        <div class="board-column">
+            <h2>2. Barche Arrivate / In Porto</h2>
+            <div id="arrivedList"></div>
+        </div>
+
+        <details class="archive-section">
+            <summary>3. Archivio Storico (Clicca per espandere)</summary>
+            <div class="archive-scroll" id="archivedList"></div>
+        </details>
+
+    </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://dxpuuibqngbpfepxaubn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_hM7hzWLEkPsLw4mlrbExZw_oi0TaTYc';
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let boats = [];
+
+const incomingList = document.getElementById('incomingList');
+const arrivedList = document.getElementById('arrivedList');
+const archivedList = document.getElementById('archivedList');
+const connectionStatus = document.getElementById('connectionStatus');
+
+function setStatus(message, isError = false) {
+    connectionStatus.textContent = message; 
+    if(isError) {
+        connectionStatus.classList.add('error');
+    } else {
+        connectionStatus.classList.remove('error');
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('it-IT', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+}
+
+function formatSize(length, width) {
+    const l = length ? `${length} m` : '-';
+    const w = width ? `${width} m` : '-';
+    return `${l} x ${w}`;
+}
+
+async function fetchBoats() {
+    setStatus("Sincronizzazione con Supabase in corso...");
+    
+    try {
+        const { data, error } = await client
+            .from('boats')
+            .select('*')
+            .order('arrival_date', { ascending: true }); // Ordinamento cronologico base (dal 1 gen al 31 dic)
+
+        if (error) {
+            console.error('Errore Supabase DB:', error);
+            setStatus("Errore database: " + error.message, true);
+            return;
+        }
+
+        boats = data || [];
+        setStatus("✅ Connesso. Dati aggiornati in tempo reale.");
+        renderBoats();
+
+    } catch (err) {
+        console.error('Eccezione JS:', err);
+        setStatus("❌ Errore critico di comunicazione con Supabase.", true);
+    }
+}
+
+document.getElementById('boatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    setStatus("Salvataggio in corso...");
+
+    try {
+        const lengthVal = document.getElementById('boatLength').value;
+        const widthVal = document.getElementById('boatWidth').value;
+
+        const newBoat = {
+            name: document.getElementById('boatName').value,
+            model: document.getElementById('boatModel').value, // Salvataggio modello
+            arrival_date: document.getElementById('arrivalDate').value,
+            mooring: document.getElementById('mooring').value,
+            type: document.getElementById('boatType').value,
+            length: lengthVal ? parseFloat(lengthVal) : null,
+            width: widthVal ? parseFloat(widthVal) : null,
+            notes: document.getElementById('boatNotes').value,
+            status: 'incoming'
+        };
+
+        const { error } = await client.from('boats').insert([newBoat]);
+
+        if (error) {
+            console.error('Errore inserimento:', error);
+            setStatus("❌ Errore nel salvataggio: " + error.message, true);
+            return;
+        } 
+        
+        this.reset();
+        fetchBoats();
+        
+    } catch (err) {
+        console.error('Errore bloccante:', err);
+        setStatus("❌ Impossibile inviare i dati in questo momento.", true);
+    }
+});
+
+async function markAsArrived(id) {
+    setStatus("Aggiornamento stato (In Porto)...");
+    try {
+        const { error } = await client.from('boats').update({ status: 'arrived' }).eq('id', id);
+        if (error) throw error;
+        fetchBoats();
+    } catch (err) {
+        setStatus("❌ Errore nell'aggiornamento.", true);
+    }
+}
+
+async function archiveBoat(id) {
+    setStatus("Archiviazione pratica in corso...");
+    try {
+        const { error } = await client.from('boats').update({ status: 'archived' }).eq('id', id);
+        if (error) throw error;
+        fetchBoats();
+    } catch (err) {
+        setStatus("❌ Errore durante l'archiviazione.", true);
+    }
+}
+
+function renderBoats() {
+    incomingList.innerHTML = '';
+    arrivedList.innerHTML = '';
+    archivedList.innerHTML = '';
+
+    const incoming = boats.filter(b => b.status === 'incoming');
+    const arrived = boats.filter(b => b.status === 'arrived');
+    const archived = boats.filter(b => b.status === 'archived'); // Già ordinate dal 1 gen al 31 dic grazie alla query
+
+    const createCard = (boat) => {
+        const card = document.createElement('div');
+        card.className = `boat-card ${boat.status}`;
+        
+        // --- LOGICA RITARDO ---
+        let isLate = false;
+        // Controlla il ritardo solo se la barca è ancora "in arrivo"
+        if (boat.status === 'incoming' && boat.arrival_date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Azzera l'ora per confrontare solo i giorni esatti
+            const arrival = new Date(boat.arrival_date);
+            
+            if (arrival < today) {
+                isLate = true;
+            }
+        }
+        // -----------------------
+
+        let cardHTML = `
+            <div class="boat-info">
+                <h3>${boat.name} <span style="font-size: 14px; font-weight: normal; color: #555;">(${boat.type || 'N/D'})</span></h3>
+                <div class="boat-model">${boat.model ? boat.model : 'Modello non specificato'}</div>
+                
+                <div class="date-badge ${isLate ? 'late' : ''}">
+                    📅 Arrivo: ${formatDate(boat.arrival_date)} ${isLate ? ' ⚠️ IN RITARDO' : ''}
+                </div>
+                
+                <p><strong>Ormeggio:</strong> ${boat.mooring}</p>
+                <p><strong>Dimensioni:</strong> ${formatSize(boat.length, boat.width)}</p>
+        `;
+        
+        if (boat.notes && boat.notes.trim() !== '') {
+            const formattedNotes = boat.notes.replace(/\n/g, '<br>');
+            cardHTML += `<p class="boat-note"><strong>Note:</strong><br>${formattedNotes}</p>`;
+        }
+
+        cardHTML += `
+            </div>
+            <div class="actions">
+                ${boat.status === 'incoming' ? `<button class="btn-arrived" onclick="markAsArrived(${boat.id})">✓ Arrivata</button>` : ''}
+                ${boat.status === 'arrived' ? `<button class="btn-archive" onclick="archiveBoat(${boat.id})">📁 Archivia</button>` : ''}
+                ${boat.status === 'archived' ? `<span style="color: #7f8c8d; font-size: 13px; font-weight: bold;">Archiviata</span>` : ''}
+            </div>
+        `;
+        
+        card.innerHTML = cardHTML;
+        return card;
+    };
+
+    // 1. Popola gli Arrivi e le Barche in porto
+    incoming.forEach(boat => incomingList.appendChild(createCard(boat)));
+    arrived.forEach(boat => arrivedList.appendChild(createCard(boat)));
+
+    // 2. LOGICA SPECIALE: Raggruppamento Archivio per Anno
+    if (archived.length === 0) {
+        archivedList.innerHTML = '<p class="empty-message">L\'archivio storico è vuoto.</p>';
+    } else {
+        // Raggruppiamo i record per anno in un oggetto { "2026": [...], "2027": [...] }
+        const yearsGroup = {};
+        archived.forEach(boat => {
+            const year = new Date(boat.arrival_date).getFullYear();
+            if (!yearsGroup[year]) {
+                yearsGroup[year] = [];
+            }
+            yearsGroup[year].push(boat);
+        });
+
+        // Estraiamo gli anni e li ordiniamo dal più recente al più vecchio in cima alla lista
+        const sortedYears = Object.keys(yearsGroup).sort((a, b) => b - a);
+
+        // Generiamo i blocchi HTML per ciascun anno
+        sortedYears.forEach(year => {
+            const yearBlock = document.createElement('div');
+            yearBlock.className = 'archive-year-block';
+            
+            const yearTitle = document.createElement('div');
+            yearTitle.className = 'archive-year-title';
+            yearTitle.textContent = `Stagione ${year}`;
+            yearBlock.appendChild(yearTitle);
+
+            // Inseriamo le barche dell'anno corrente (mantenendo l'ordine cronologico 1 gen -> 31 dic)
+            yearsGroup[year].forEach(boat => {
+                yearBlock.appendChild(createCard(boat));
+            });
+
+            archivedList.appendChild(yearBlock);
+        });
+    }
+
+    if(incoming.length === 0) incomingList.innerHTML = '<p class="empty-message">Nessun arrivo previsto in questo momento.</p>';
+    if(arrived.length === 0) arrivedList.innerHTML = '<p class="empty-message">Nessuna barca attualmente registrata in porto.</p>';
+}
+
+// Avvio
+fetchBoats();
+</script>
+</body>
+</html>
