@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#0b3954">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 :root {
@@ -78,7 +79,6 @@ header {
     margin: 0 auto;
 }
 
-/* --- NUOVO STILE COMPATTO MODULO INSERIMENTO --- */
 details.form-section {
     flex: 1;
     background: white;
@@ -150,15 +150,20 @@ h2 {
 }
 
 .btn-export {
-    background-color: #2c3e50;
+    background-color: #107c41; /* Verde Microsoft Excel */
     font-size: 14px;
-    padding: 8px 12px;
+    padding: 9px 14px;
     margin-bottom: 15px;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
 }
-.btn-export:hover { background-color: #34495e; }
+.btn-export:hover { background-color: #0a5c30; }
 
 details.archive-section {
     background: #eaeaea;
@@ -352,8 +357,6 @@ button:hover { opacity: 0.9; }
     .actions button, .actions .btn-upload-inline { width: 100%; justify-content: center; }
     .search-container { flex-direction: column; align-items: flex-start; }
     .search-container input { width: 100%; }
-    
-    /* Riduce i margini del modulo collassato su telefono */
     details.form-section { padding: 12px; margin-bottom: 5px; }
 }
 </style>
@@ -434,7 +437,7 @@ button:hover { opacity: 0.9; }
             <details class="archive-section">
                 <summary>3. Archivio Storico (Clicca per espandere)</summary>
                 <div class="archive-scroll">
-                    <button class="btn-export" onclick="exportArchiveToCSV()">📥 Esporta Archivio in Excel (CSV)</button>
+                    <button class="btn-export" onclick="exportArchiveToExcel()">📊 Esporta Archivio in Excel (.xlsx)</button>
                     <div id="archivedList"></div>
                 </div>
             </details>
@@ -530,6 +533,7 @@ function switchView(view) {
     }
 }
 
+// Orologio continuo bacheca
 function updateClock() {
     const now = new Date();
     document.getElementById('liveClock').textContent = now.toLocaleTimeString('it-IT', { hour12: false });
@@ -543,7 +547,7 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-// Controllo apertura automatica del form in base al dispositivo all'avvio
+// Logica auto-apertura form (Desktop SI, Smartphone NO)
 if (window.innerWidth > 768) {
     document.getElementById('boatFormDetails').open = true;
 }
@@ -665,302 +669,4 @@ function openMonitorModal(boatId) {
         photoContainer.innerHTML = '<p style="color:#777; font-style:italic;">Nessuna fotografia caricata dagli ormeggiatori per questa imbarcazione.</p>';
     }
 
-    document.getElementById('monitorModal').style.display = 'flex';
-}
-
-function closeMonitorModal() {
-    document.getElementById('monitorModal').style.display = 'none';
-}
-
-document.getElementById('boatForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const boatId = document.getElementById('editingBoatId').value;
-    const isEditMode = boatId !== "";
-    try {
-        const lengthVal = document.getElementById('boatLength').value;
-        const widthVal = document.getElementById('boatWidth').value;
-
-        const boatData = {
-            name: document.getElementById('boatName').value,
-            model: document.getElementById('boatModel').value,
-            arrival_date: document.getElementById('arrivalDate').value,
-            mooring: document.getElementById('mooring').value,
-            type: document.getElementById('boatType').value,
-            length: lengthVal ? parseFloat(lengthVal) : null,
-            width: widthVal ? parseFloat(widthVal) : null,
-            notes: document.getElementById('boatNotes').value
-        };
-
-        if (isEditMode) {
-            await client.from('boats').update(boatData).eq('id', boatId);
-            cancelEdit(); 
-        } else {
-            boatData.status = 'incoming';
-            boatData.photos = [];
-            await client.from('boats').insert([boatData]);
-            this.reset();
-            // Su smartphone richiudi il modulo dopo il salvataggio per liberare lo schermo
-            if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
-        }
-        fetchBoats();
-    } catch (err) { setStatus("❌ Errore salvataggio.", true); }
-});
-
-async function uploadPhotosInline(boatId, inputElement) {
-    const files = inputElement.files;
-    if (!files || files.length === 0) return;
-    setStatus("Salvataggio file...");
-    try {
-        const targetBoat = boats.find(b => b.id === boatId);
-        let currentPhotos = targetBoat && targetBoat.photos ? [...targetBoat.photos] : [];
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.${fileExt}`;
-
-            await client.storage.from('boat-photos').upload(fileName, file);
-            const { data: urlData } = client.storage.from('boat-photos').getPublicUrl(fileName);
-            currentPhotos.push(urlData.publicUrl);
-        }
-
-        await client.from('boats').update({ photos: currentPhotos }).eq('id', boatId);
-        fetchBoats();
-    } catch (err) { setStatus("❌ Errore caricamento foto.", true); }
-}
-
-async function cancelArrival(id) {
-    if (confirm("⚠️ ATTENZIONE: Vuoi annullare questo arrivo ed eliminare definitivamente la scheda dalla bacheca?")) {
-        setStatus("Annullamento in corso...");
-        try {
-            if(String(id).startsWith('mock_')) {
-                boats = boats.filter(b => b.id !== id);
-                setStatus("Barca demo rimossa.");
-                renderBoats();
-                return;
-            }
-            const { error } = await client.from('boats').delete().eq('id', id);
-            if (error) throw error;
-            fetchBoats();
-        } catch (err) { setStatus("❌ Errore durante l'eliminazione.", true); }
-    }
-}
-
-function startEdit(id) {
-    const boat = boats.find(b => b.id === id);
-    if (!boat) return;
-    
-    // ESPANDE IL FORM IN AUTOMATICO SE ERA CHIUSO
-    document.getElementById('boatFormDetails').open = true;
-
-    document.getElementById('editingBoatId').value = boat.id;
-    document.getElementById('boatName').value = boat.name;
-    document.getElementById('boatModel').value = boat.model || '';
-    document.getElementById('arrivalDate').value = boat.arrival_date;
-    document.getElementById('mooring').value = boat.mooring;
-    document.getElementById('boatType').value = boat.type;
-    document.getElementById('boatLength').value = boat.length || '';
-    document.getElementById('boatWidth').value = boat.width || '';
-    document.getElementById('boatNotes').value = boat.notes || '';
-    
-    document.getElementById('formTitle').textContent = "✏️ Modifica Barca";
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.textContent = "Salva Modifiche";
-    submitBtn.classList.add('edit-mode');
-    document.getElementById('cancelEditBtn').style.display = "block";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function cancelEdit() {
-    document.getElementById('boatForm').reset();
-    document.getElementById('editingBoatId').value = "";
-    document.getElementById('formTitle').textContent = "Nuovo Arrivo";
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.textContent = "Aggiungi in Bacheca";
-    submitBtn.classList.remove('edit-mode');
-    document.getElementById('cancelEditBtn').style.display = "none";
-    
-    // Su smartphone, se annulla la modifica, comprimi il menu
-    if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
-}
-
-async function markAsArrived(id) {
-    await client.from('boats').update({ status: 'arrived' }).eq('id', id);
-    fetchBoats();
-}
-
-async function archiveBoat(id) {
-    await client.from('boats').update({ status: 'archived' }).eq('id', id);
-    fetchBoats();
-}
-
-function exportArchiveToCSV() {
-    const archivedBoats = boats.filter(b => b.status === 'archived');
-    let csvContent = "\uFEFFNome Barca;Cantiere-Modello;Data Arrivo;Ormeggio;Tipo;Lunghezza (m);Larghezza (m);Note\n";
-    archivedBoats.forEach(b => {
-        csvContent += `${b.name};${b.model || ''};${formatDate(b.arrival_date)};${b.mooring};${b.type};${b.length || '-'};${b.width || '-'};${(b.notes || '').replace(/[\n\r;]/g, " ")}\n`;
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Archivio_Arrivi.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function renderBoats() {
-    incomingList.innerHTML = '';
-    arrivedList.innerHTML = '';
-    archivedList.innerHTML = '';
-
-    monitorTodayList.innerHTML = '';
-    monitorFutureList.innerHTML = '';
-    monitorArrivedList.innerHTML = '';
-
-    let filteredBoats = boats;
-    if (filterDateValue) {
-        filteredBoats = boats.filter(b => b.arrival_date === filterDateValue);
-    }
-
-    const incoming = filteredBoats.filter(b => b.status === 'incoming');
-    const arrived = filteredBoats.filter(b => b.status === 'arrived');
-    const archived = filteredBoats.filter(b => b.status === 'archived');
-
-    // --- INTERFACCIA GESTIONE ---
-    const createManagementCard = (boat) => {
-        const card = document.createElement('div');
-        card.className = `boat-card ${boat.status}`;
-        const todayStr = getTodayString();
-        let isLate = boat.status === 'incoming' && boat.arrival_date && boat.arrival_date < todayStr;
-
-        let cardHTML = `
-            <div class="boat-info">
-                <h3>${boat.name} <span style="font-size: 13px; font-weight: normal; color: #666;">(${boat.type || 'N/D'})</span></h3>
-                <div class="boat-model">${boat.model ? boat.model : 'Modello non specificato'}</div>
-                <div class="date-badge ${isLate ? 'late' : ''}">📅 Arrivo: ${formatDate(boat.arrival_date)} ${isLate ? ' ⚠️ IN RITARDO' : ''}</div>
-                <p><strong>Ormeggio:</strong> ${boat.mooring}</p>
-                <p><strong>Dimensioni:</strong> ${formatSize(boat.length, boat.width)}</p>
-        `;
-        if (boat.notes && boat.notes.trim() !== '') {
-            cardHTML += `<p class="boat-note"><strong>Note:</strong><br>${boat.notes.replace(/\n/g, '<br>')}</p>`;
-        }
-        if (boat.photos && boat.photos.length > 0) {
-            cardHTML += `<div class="photo-gallery">`;
-            boat.photos.forEach(p => { cardHTML += `<a href="${p}" target="_blank"><img src="${p}" class="photo-preview"></a>`; });
-            cardHTML += `</div>`;
-        }
-        
-        cardHTML += `</div><div class="actions">
-            ${boat.status === 'incoming' ? `
-                <button class="btn-edit" onclick="startEdit('${boat.id}')">✏️ Modifica</button>
-                <button class="btn-arrived" onclick="markAsArrived('${boat.id}')">✓ Arrivata</button>
-                <button class="btn-cancel" onclick="cancelArrival('${boat.id}')">✕ Arrivo Annullato</button>
-            ` : ''}
-            ${boat.status === 'arrived' ? `
-                <label class="btn-upload-inline">📷 Foto<input type="file" accept="image/*" multiple style="display: none;" onchange="uploadPhotosInline('${boat.id}', this)"></label>
-                <button class="btn-archive" onclick="archiveBoat('${boat.id}')">📁 Archivia</button>
-            ` : ''}
-        </div>`;
-        card.innerHTML = cardHTML;
-        return card;
-    };
-
-    incoming.forEach(b => incomingList.appendChild(createManagementCard(b)));
-    arrived.forEach(b => arrivedList.appendChild(createManagementCard(b)));
-
-    if (archived.length > 0) {
-        const yearsGroup = {};
-        archived.forEach(b => {
-            const year = new Date(b.arrival_date).getFullYear();
-            if (!yearsGroup[year]) yearsGroup[year] = [];
-            yearsGroup[year].push(b);
-        });
-        Object.keys(yearsGroup).sort((a,b) => b-a).forEach(year => {
-            const block = document.createElement('div'); block.className = 'archive-year-block';
-            const title = document.createElement('div'); title.className = 'archive-year-title'; title.textContent = `Stagione ${year}`;
-            block.appendChild(title);
-            yearsGroup[year].forEach(b => block.appendChild(createManagementCard(b)));
-            archivedList.appendChild(block);
-        });
-    } else { archivedList.innerHTML = '<p class="empty-message">Archivio vuoto.</p>'; }
-
-    const todayStr = getTodayString();
-    let countToday = 0, countFuture = 0, countArrived = arrived.length;
-
-    const createMonitorMiniCard = (boat, typeOfIncomingStatus) => {
-        const card = document.createElement('div');
-        card.className = `monitor-mini-card ${typeOfIncomingStatus}-status`;
-        card.setAttribute('onclick', `openMonitorModal('${boat.id}')`);
-
-        let badgeText = '';
-        if (typeOfIncomingStatus === 'late') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--danger-color)">⚠️ IN RITARDO</span>';
-        if (typeOfIncomingStatus === 'today') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--warning-color)">⏰ OGGI</span>';
-        if (typeOfIncomingStatus === 'arrived') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--success-color)">● IN PORTO</span>';
-
-        card.innerHTML = `
-            <div class="monitor-mini-info">
-                <h3>${boat.name} <span style="font-size:13px; font-weight:normal; color:#666;">(${boat.type || '-'})</span></h3>
-                <div class="sub-text">${boat.model ? boat.model : 'Modello NC'} | ${formatSize(boat.length, boat.width)}</div>
-                <div class="details">Previsto: <strong>${formatDate(boat.arrival_date)}</strong></div>
-                ${badgeText}
-            </div>
-            <div class="monitor-mini-mooring">
-                <span class="mooring-place">${boat.mooring}</span>
-            </div>
-        `;
-        return card;
-    };
-
-    incoming.forEach(boat => {
-        if (boat.arrival_date < todayStr) {
-            monitorTodayList.appendChild(createMonitorMiniCard(boat, 'late'));
-            countToday++;
-        } else if (boat.arrival_date === todayStr) {
-            monitorTodayList.appendChild(createMonitorMiniCard(boat, 'today'));
-            countToday++;
-        } else {
-            monitorFutureList.appendChild(createMonitorMiniCard(boat, 'future'));
-            countFuture++;
-        }
-    });
-
-    arrived.forEach(boat => {
-        monitorArrivedList.appendChild(createMonitorMiniCard(boat, 'arrived'));
-    });
-
-    document.getElementById('countToday').textContent = countToday;
-    document.getElementById('countFuture').textContent = countFuture;
-    document.getElementById('countArrived').textContent = countArrived;
-
-    if (countToday === 0) monitorTodayList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun movimento programmato o in ritardo per oggi.</p>';
-    if (countFuture === 0) monitorFutureList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo pianificato nei primi giorni.</p>';
-    if (countArrived === 0) monitorArrivedList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessuna imbarcazione presente agli ormeggi.</p>';
-
-    if(incoming.length === 0) incomingList.innerHTML = '<p class="empty-message">Nessun arrivo previsto trovato.</p>';
-    if(arrived.length === 0) arrivedList.innerHTML = '<p class="empty-message">Nessuna barca attualmente registrata in porto.</p>';
-}
-
-window.addEventListener('resize', () => {
-    if (window.innerWidth <= 768) {
-        document.getElementById('sectionManagement').style.display = 'block';
-        document.getElementById('sectionMonitor').style.display = 'none';
-        document.getElementById('boatFormDetails').open = false; // Forza chiusura su mobile
-    } else {
-        document.getElementById('boatFormDetails').open = true; // Forza apertura su PC
-    }
-});
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA attiva.'))
-            .catch(err => console.error(err));
-    });
-}
-
-fetchBoats();
-</script>
-</body>
-</html>
+    document.getElementById('monitorModal').style.
