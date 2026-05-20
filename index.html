@@ -39,6 +39,7 @@ header {
     margin-bottom: 15px;
 }
 
+/* --- MENU DI NAVIGAZIONE A TABS --- */
 .app-nav {
     display: flex;
     gap: 10px;
@@ -270,183 +271,64 @@ button:hover { opacity: 0.9; }
 .empty-message { color: #777; font-style: italic; }
 .status.error { background: #fde8e8; color: var(--danger-color); border: 1px solid #e74c3c; }
 
-
-/* ======================================================= */
-/* --- STILI MONITOR VERTICALE 32" TOUCH CON SCROLL ------ */
-/* ======================================================= */
-.monitor-container-full {
-    height: calc(100vh - 100px);
-    display: flex;
-    flex-direction: column;
-    max-width: 1200px;
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-
-.monitor-header {
-    background: #0b3954;
-    color: white;
-    padding: 20px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    margin-bottom: 15px;
-    flex-shrink: 0; /* Impedisce all'intestazione di rimpicciolirsi */
-}
-
+.monitor-container-full { height: calc(100vh - 100px); display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; box-sizing: border-box; }
+.monitor-header { background: #0b3954; color: white; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 15px; flex-shrink: 0; }
 .monitor-title h1 { margin: 0; font-size: 36px; letter-spacing: 1px; text-transform: uppercase; }
 .monitor-title p { margin: 3px 0 0 0; font-size: 18px; opacity: 0.9; font-weight: bold; color: #00fff2; }
-
 .monitor-clock { text-align: right; }
 .monitor-clock .time { font-size: 46px; font-weight: 900; color: #00fff2; font-family: monospace; line-height: 1; }
 .monitor-clock .date { font-size: 16px; opacity: 0.8; margin-top: 3px; font-weight: bold; text-transform: capitalize; }
-
-/* AREA SCRENN SCROLLABILE CON IL DITO */
-.monitor-scrollable-area {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    -webkit-overflow-scrolling: touch; /* Rende lo scroll fluidissimo su tablet/touch */
-}
-
-.monitor-block {
-    background: white;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.monitor-block h2 {
-    font-size: 24px;
-    padding-bottom: 8px;
-    margin-bottom: 15px;
-    border-bottom: 4px solid var(--secondary-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
+.monitor-scrollable-area { flex: 1; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 20px; -webkit-overflow-scrolling: touch; }
+.monitor-block { background: white; border-radius: 12px; padding: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.monitor-block h2 { font-size: 24px; padding-bottom: 8px; margin-bottom: 15px; border-bottom: 4px solid var(--secondary-color); display: flex; justify-content: space-between; align-items: center; }
 .monitor-block-today h2 { border-bottom-color: var(--warning-color); color: var(--warning-color); }
 .monitor-block-future h2 { border-bottom-color: var(--secondary-color); color: var(--primary-color); }
 .monitor-block-arrived h2 { border-bottom-color: var(--success-color); color: var(--success-color); }
-
-.counter-badge {
-    background: #eee;
-    color: #333;
-    padding: 2px 12px;
-    border-radius: 20px;
-    font-size: 16px;
-    font-weight: 800;
-}
+.counter-badge { background: #eee; color: #333; padding: 2px 12px; border-radius: 20px; font-size: 16px; font-weight: 800; }
 .monitor-block-today .counter-badge { background: var(--warning-color); color: white; }
 .monitor-block-future .counter-badge { background: var(--secondary-color); color: white; }
 .monitor-block-arrived .counter-badge { background: var(--success-color); color: white; }
-
-.monitor-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-/* CARD RETTANGOLARE PICCOLA INTERATTIVA */
-.monitor-mini-card {
-    background: #fff;
-    border-left: 6px solid var(--secondary-color);
-    padding: 12px 14px;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer; /* Fa capire che è cliccabile */
-    transition: transform 0.15s, box-shadow 0.15s;
-    border: 1px solid #eef1f5;
-}
-
-.monitor-mini-card:active {
-    transform: scale(0.98);
-    background-color: #f4f6f9;
-}
-
+.monitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.monitor-mini-card { background: #fff; border-left: 6px solid var(--secondary-color); padding: 12px 14px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border: 1px solid #eef1f5; }
+.monitor-mini-card:active { transform: scale(0.98); background-color: #f4f6f9; }
 .monitor-mini-card.arrived-status { border-left-color: var(--success-color); background: #fafdff; }
 .monitor-mini-card.today-status { border-left-color: var(--warning-color); background: #fffdf9; }
 .monitor-mini-card.late-status { border-left-color: var(--danger-color); background: #fff6f6; animation: pulse-light 2.5s infinite; }
-
+@keyframes pulse-light { 0% { background-color: #fff6f6; } 50% { background-color: #ffe6e6; } 100% { background-color: #fff6f6; } }
 .monitor-mini-info { display: flex; flex-direction: column; gap: 2px; width: 75%; }
 .monitor-mini-info h3 { margin: 0; font-size: 19px; color: var(--primary-color); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .monitor-mini-info .sub-text { font-size: 13px; color: #666; font-weight: 500; }
 .monitor-mini-info .details { font-size: 14px; color: #222; margin-top: 1px; }
-
 .monitor-mini-mooring { text-align: right; width: 25%; }
 .monitor-mini-mooring .mooring-place { font-size: 16px; font-weight: 900; color: #0b3954; background: #eaf2f8; padding: 4px 8px; border-radius: 4px; display: inline-block; }
 .monitor-mini-card.arrived-status .mooring-place { background: #e8f8f5; color: var(--success-color); }
 .monitor-mini-card.late-status .mooring-place { background: #fde8e8; color: var(--danger-color); }
 .monitor-mini-badge-text { font-size: 11px; font-weight: 900; text-transform: uppercase; margin-top: 4px; display: block; }
 
-/* --------------------------------------------------- */
-/* --- POPUP (MODAL) PER DETTAGLI COMPLETI TOUCH ----- */
-/* --------------------------------------------------- */
-.monitor-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
-    justify-content: center;
-    align-items: center;
-}
+.monitor-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; }
+.monitor-modal-content { background-color: white; padding: 30px; border-radius: 16px; width: 85%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-top: 10px solid var(--primary-color); }
+.close-modal { position: absolute; top: 15px; right: 25px; font-size: 40px; font-weight: bold; color: #666; cursor: pointer; }
+.modal-grid-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #eee; }
+.modal-img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd; }
 
-.monitor-modal-content {
-    background-color: white;
-    padding: 30px;
-    border-radius: 16px;
-    width: 85%;
-    max-width: 800px;
-    max-height: 85vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    border-top: 10px solid var(--primary-color);
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 25px;
-    font-size: 40px;
-    font-weight: bold;
-    color: #666;
-    cursor: pointer;
-}
-
-.modal-grid-photos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 2px dashed #eee;
-}
-
-.modal-img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #ddd;
-}
-
-@media (max-width: 900px) {
-    .monitor-grid { grid-template-columns: 1fr; }
+/* ======================================================= */
+/* --- CONTROLLO RESPONSIVE RIGIDO PER SMARTPHONES ------- */
+/* ======================================================= */
+@media (max-width: 768px) {
+    body { padding: 12px; }
+    
+    /* 1. NASCONDI IL MENU AD ALBERO/TABS, IL POPUP E IL LAYOUT MONITOR */
+    .app-nav { display: none !important; }
+    #sectionMonitor { display: none !important; }
+    .monitor-modal { display: none !important; }
+    
+    /* 2. FORZA LA VISUALIZZAZIONE COMPLETA E CORRETTA DEL MANAGEMENT */
+    #sectionManagement { display: block !important; }
+    .container { flex-direction: column; }
+    .boat-card { flex-direction: column; }
+    .actions button, .actions .btn-upload-inline { width: 100%; justify-content: center; }
+    .search-container { flex-direction: column; align-items: flex-start; }
+    .search-container input { width: 100%; }
 }
 </style>
 </head>
@@ -547,7 +429,6 @@ button:hover { opacity: 0.9; }
         </div>
 
         <div class="monitor-scrollable-area">
-            
             <div class="monitor-block monitor-block-today">
                 <h2>⛵ IN ARRIVO OGGI / IN RITARDO <span class="counter-badge" id="countToday">0</span></h2>
                 <div class="monitor-grid" id="monitorTodayList"></div>
@@ -562,7 +443,6 @@ button:hover { opacity: 0.9; }
                 <h2>⚓ IMBARCAZIONI ATTUALMENTE IN PORTO <span class="counter-badge" id="countArrived">0</span></h2>
                 <div class="monitor-grid" id="monitorArrivedList"></div>
             </div>
-            
         </div>
     </div>
 </div>
@@ -608,6 +488,9 @@ function setStatus(message, isError = false) {
 }
 
 function switchView(view) {
+    // Se siamo su mobile, blocca qualsiasi tentativo di switch forzato
+    if (window.innerWidth <= 768) return;
+
     if (view === 'management') {
         document.getElementById('sectionManagement').style.display = 'block';
         document.getElementById('sectionMonitor').style.display = 'none';
@@ -670,13 +553,12 @@ function getTodayString() {
     return `${y}-${m}-${d}`;
 }
 
-// SIMULATORE COMPLETO PER TESTARE 40 IMBARCAZIONI SUL 32 POLLICI
 function load40MockBoats() {
+    if (window.innerWidth <= 768) return; // Disattivato su smartphone
+
     const todayStr = getTodayString();
-    
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const tomStr = tomorrow.toISOString().split('T')[0];
-    
     const nextDays = new Date(); nextDays.setDate(nextDays.getDate() + 3);
     const nextStr = nextDays.toISOString().split('T')[0];
 
@@ -701,7 +583,6 @@ function load40MockBoats() {
         else { 
             status = 'arrived'; 
             date = todayStr;
-            // Inseriamo dei finti link di immagini per vedere la galleria nel popup touch
             photos = ["https://picsum.photos/id/10/800/600", "https://picsum.photos/id/11/800/600"];
         }
 
@@ -721,13 +602,13 @@ function load40MockBoats() {
     }
 
     boats = mockData;
-    setStatus("⚡ MODALITÀ DEMO: 40 imbarcazioni pronte sul monitor!");
+    setStatus("⚡ MODALITÀ DEMO CARICATA!");
     renderBoats();
     switchView('monitor');
 }
 
-// FUNZIONE TOUCH: APRE IL MODAL SUL MONITOR
 function openMonitorModal(boatId) {
+    if (window.innerWidth <= 768) return; // Disattivato su smartphone
     const boat = boats.find(b => b.id === boatId);
     if (!boat) return;
 
@@ -946,15 +827,13 @@ function renderBoats() {
     } else { archivedList.innerHTML = '<p class="empty-message">Archivio vuoto.</p>'; }
 
 
-    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH ---
+    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH (VIENE IGNORATA SU MOBILE DA CSS) ---
     const todayStr = getTodayString();
     let countToday = 0, countFuture = 0, countArrived = arrived.length;
 
     const createMonitorMiniCard = (boat, typeOfIncomingStatus) => {
         const card = document.createElement('div');
         card.className = `monitor-mini-card ${typeOfIncomingStatus}-status`;
-        
-        // Colleghiamo la funzione touch che apre il pop-up informativo
         card.setAttribute('onclick', `openMonitorModal('${boat.id}')`);
 
         let badgeText = '';
@@ -997,13 +876,21 @@ function renderBoats() {
     document.getElementById('countFuture').textContent = countFuture;
     document.getElementById('countArrived').textContent = countArrived;
 
-    if (countToday === 0) monitorTodayList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo programmato o in ritardo per oggi.</p>';
-    if (countFuture === 0) monitorFutureList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo pianificato nei prossimi giorni.</p>';
+    if (countToday === 0) monitorTodayList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun movimento programmato o in ritardo per oggi.</p>';
+    if (countFuture === 0) monitorFutureList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo pianificato nei primi giorni.</p>';
     if (countArrived === 0) monitorArrivedList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessuna imbarcazione presente agli ormeggi.</p>';
 
     if(incoming.length === 0) incomingList.innerHTML = '<p class="empty-message">Nessun arrivo previsto trovato.</p>';
     if(arrived.length === 0) arrivedList.innerHTML = '<p class="empty-message">Nessuna barca attualmente registrata in porto.</p>';
 }
+
+// Forza il ripristino dell'interfaccia corretta in caso di rotazioni o resize anomali
+window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+        document.getElementById('sectionManagement').style.display = 'block';
+        document.getElementById('sectionMonitor').style.display = 'none';
+    }
+});
 
 fetchBoats();
 </script>
