@@ -425,9 +425,28 @@ const arrivedList = document.getElementById('arrivedList');
 const archivedList = document.getElementById('archivedList');
 const connectionStatus = document.getElementById('connectionStatus');
 
+let statusTimeout; // Variabile per gestire il timer
+
 function setStatus(message, isError = false) {
+    const connectionStatus = document.getElementById('connectionStatus');
     connectionStatus.textContent = message; 
-    if(isError) { connectionStatus.classList.add('error'); } else { connectionStatus.classList.remove('error'); }
+    connectionStatus.style.display = 'block';
+    
+    // Forza un piccolo ritardo per permettere al browser di ripristinare l'opacità
+    setTimeout(() => { connectionStatus.style.opacity = '1'; }, 10);
+
+    if (isError) { 
+        connectionStatus.classList.add('error'); 
+        clearTimeout(statusTimeout); // Gli errori rimangono fissi
+    } else { 
+        connectionStatus.classList.remove('error'); 
+        clearTimeout(statusTimeout);
+        // Nasconde il banner dopo 3,5 secondi
+        statusTimeout = setTimeout(() => {
+            connectionStatus.style.opacity = '0'; // Inizia la dissolvenza
+            setTimeout(() => { connectionStatus.style.display = 'none'; }, 500); // Lo rimuove fisicamente
+        }, 3500);
+    }
 }
 
 function switchView(view) {
