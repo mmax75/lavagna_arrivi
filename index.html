@@ -265,7 +265,7 @@ button:hover { opacity: 0.9; }
 .btn-arrived { background: var(--success-color); }
 .btn-archive { background: #f39c12; }
 .btn-edit { background: #3498db; }
-.btn-cancel { background: #7f8c8d; } /* Grigio per tasto annulla arrivo */
+.btn-cancel { background: #7f8c8d; }
 
 .status { max-width: 1250px; margin: 0 auto 15px auto; padding: 10px 14px; border-radius: 6px; background: #eaf7f8; color: #0b3954; font-weight: bold; }
 .empty-message { color: #777; font-style: italic; }
@@ -433,7 +433,7 @@ button:hover { opacity: 0.9; }
             </div>
 
             <div class="monitor-block monitor-block-arrived">
-                <h2>⚓ IMBARCAZIONI ATTUALMENTE IN PORTO <span class="counter-badge" id="countArrived">0</span></h2>
+                <h2>⚓ BARCHE ARRIVATE / IN PORTO <span class="counter-badge" id="countArrived">0</span></h2>
                 <div class="monitor-grid" id="monitorArrivedList"></div>
             </div>
         </div>
@@ -688,12 +688,10 @@ async function uploadPhotosInline(boatId, inputElement) {
     } catch (err) { setStatus("❌ Errore caricamento foto.", true); }
 }
 
-// NUOVA FUNZIONE: CANCELLAZIONE REALE DI UN ARRIVO DA SUPABASE WITH CONFIRM DI SICUREZZA
 async function cancelArrival(id) {
     if (confirm("⚠️ ATTENZIONE: Vuoi annullare questo arrivo ed eliminare definitivamente la scheda della barca dalla bacheca?")) {
         setStatus("Annullamento e rimozione in corso...");
         try {
-            // Se l'ID contiene 'mock_', stiamo lavorando in locale con la demo
             if(String(id).startsWith('mock_')) {
                 boats = boats.filter(b => b.id !== id);
                 setStatus("Barca demo rimossa con successo.");
@@ -811,7 +809,6 @@ function renderBoats() {
             cardHTML += `</div>`;
         }
         
-        // INTEGRATO IL TASTO "ARRIVO ANNULLATO" SOLO SULLE BARCHE CON STATUS INCOMING
         cardHTML += `</div><div class="actions">
             ${boat.status === 'incoming' ? `
                 <button class="btn-edit" onclick="startEdit('${boat.id}')">✏️ Modifica</button>
