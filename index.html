@@ -39,7 +39,6 @@ header {
     margin-bottom: 15px;
 }
 
-/* --- MENU DI NAVIGAZIONE A TABS --- */
 .app-nav {
     display: flex;
     gap: 10px;
@@ -266,6 +265,7 @@ button:hover { opacity: 0.9; }
 .btn-arrived { background: var(--success-color); }
 .btn-archive { background: #f39c12; }
 .btn-edit { background: #3498db; }
+.btn-cancel { background: #7f8c8d; } /* Grigio per tasto annulla arrivo */
 
 .status { max-width: 1250px; margin: 0 auto 15px auto; padding: 10px 14px; border-radius: 6px; background: #eaf7f8; color: #0b3954; font-weight: bold; }
 .empty-message { color: #777; font-style: italic; }
@@ -311,18 +311,11 @@ button:hover { opacity: 0.9; }
 .modal-grid-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #eee; }
 .modal-img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd; }
 
-/* ======================================================= */
-/* --- CONTROLLO RESPONSIVE RIGIDO PER SMARTPHONES ------- */
-/* ======================================================= */
 @media (max-width: 768px) {
     body { padding: 12px; }
-    
-    /* 1. NASCONDI IL MENU AD ALBERO/TABS, IL POPUP E IL LAYOUT MONITOR */
     .app-nav { display: none !important; }
     #sectionMonitor { display: none !important; }
     .monitor-modal { display: none !important; }
-    
-    /* 2. FORZA LA VISUALIZZAZIONE COMPLETA E CORRETTA DEL MANAGEMENT */
     #sectionManagement { display: block !important; }
     .container { flex-direction: column; }
     .boat-card { flex-direction: column; }
@@ -488,7 +481,6 @@ function setStatus(message, isError = false) {
 }
 
 function switchView(view) {
-    // Se siamo su mobile, blocca qualsiasi tentativo di switch forzato
     if (window.innerWidth <= 768) return;
 
     if (view === 'management') {
@@ -554,7 +546,7 @@ function getTodayString() {
 }
 
 function load40MockBoats() {
-    if (window.innerWidth <= 768) return; // Disattivato su smartphone
+    if (window.innerWidth <= 768) return;
 
     const todayStr = getTodayString();
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
@@ -608,7 +600,7 @@ function load40MockBoats() {
 }
 
 function openMonitorModal(boatId) {
-    if (window.innerWidth <= 768) return; // Disattivato su smartphone
+    if (window.innerWidth <= 768) return;
     const boat = boats.find(b => b.id === boatId);
     if (!boat) return;
 
@@ -694,6 +686,31 @@ async function uploadPhotosInline(boatId, inputElement) {
         await client.from('boats').update({ photos: currentPhotos }).eq('id', boatId);
         fetchBoats();
     } catch (err) { setStatus("❌ Errore caricamento foto.", true); }
+}
+
+// NUOVA FUNZIONE: CANCELLAZIONE REALE DI UN ARRIVO DA SUPABASE WITH CONFIRM DI SICUREZZA
+async function cancelArrival(id) {
+    if (confirm("⚠️ ATTENZIONE: Vuoi annullare questo arrivo ed eliminare definitivamente la scheda della barca dalla bacheca?")) {
+        setStatus("Annullamento e rimozione in corso...");
+        try {
+            // Se l'ID contiene 'mock_', stiamo lavorando in locale con la demo
+            if(String(id).startsWith('mock_')) {
+                boats = boats.filter(b => b.id !== id);
+                setStatus("Barca demo rimossa con successo.");
+                renderBoats();
+                return;
+            }
+
+            const { error } = await client.from('boats').delete().eq('id', id);
+            if (error) throw error;
+            
+            setStatus("Arrivo annullato correttamente.");
+            fetchBoats();
+        } catch (err) {
+            console.error(err);
+            setStatus("❌ Errore durante l'eliminazione: " + err.message, true);
+        }
+    }
 }
 
 function startEdit(id) {
@@ -793,10 +810,13 @@ function renderBoats() {
             boat.photos.forEach(p => { cardHTML += `<a href="${p}" target="_blank"><img src="${p}" class="photo-preview"></a>`; });
             cardHTML += `</div>`;
         }
+        
+        // INTEGRATO IL TASTO "ARRIVO ANNULLATO" SOLO SULLE BARCHE CON STATUS INCOMING
         cardHTML += `</div><div class="actions">
             ${boat.status === 'incoming' ? `
                 <button class="btn-edit" onclick="startEdit('${boat.id}')">✏️ Modifica</button>
                 <button class="btn-arrived" onclick="markAsArrived('${boat.id}')">✓ Arrivata</button>
+                <button class="btn-cancel" onclick="cancelArrival('${boat.id}')">✕ Arrivo Annullato</button>
             ` : ''}
             ${boat.status === 'arrived' ? `
                 <label class="btn-upload-inline">📷 Foto<input type="file" accept="image/*" multiple style="display: none;" onchange="uploadPhotosInline('${boat.id}', this)"></label>
@@ -827,7 +847,7 @@ function renderBoats() {
     } else { archivedList.innerHTML = '<p class="empty-message">Archivio vuoto.</p>'; }
 
 
-    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH (VIENE IGNORATA SU MOBILE DA CSS) ---
+    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH ---
     const todayStr = getTodayString();
     let countToday = 0, countFuture = 0, countArrived = arrived.length;
 
@@ -884,7 +904,6 @@ function renderBoats() {
     if(arrived.length === 0) arrivedList.innerHTML = '<p class="empty-message">Nessuna barca attualmente registrata in porto.</p>';
 }
 
-// Forza il ripristino dell'interfaccia corretta in caso di rotazioni o resize anomali
 window.addEventListener('resize', () => {
     if (window.innerWidth <= 768) {
         document.getElementById('sectionManagement').style.display = 'block';
