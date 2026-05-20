@@ -181,7 +181,16 @@ button:hover { opacity: 0.9; }
 .btn-edit { background: #3498db; }
 .btn-cancel { background: #7f8c8d; }
 
-.status { max-width: 1250px; margin: 0 auto 15px auto; padding: 10px 14px; border-radius: 6px; background: #eaf7f8; color: #0b3954; font-weight: bold; }
+.status { 
+    max-width: 1250px; 
+    margin: 0 auto 15px auto; 
+    padding: 10px 14px; 
+    border-radius: 6px; 
+    background: #eaf7f8; 
+    color: #0b3954; 
+    font-weight: bold; 
+    transition: opacity 0.5s ease; /* Effetto dissolvenza */
+}
 .empty-message { color: #777; font-style: italic; width: 100%; }
 .status.error { background: #fde8e8; color: var(--danger-color); border: 1px solid #e74c3c; }
 
