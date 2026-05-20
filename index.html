@@ -78,12 +78,43 @@ header {
     margin: 0 auto;
 }
 
-.form-section {
+/* --- NUOVO STILE COMPATTO MODULO INSERIMENTO --- */
+details.form-section {
     flex: 1;
     background: white;
     padding: 20px;
     border-radius: 8px;
     height: fit-content;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+details.form-section summary {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    outline: none;
+}
+
+details.form-section summary::before {
+    content: "▶";
+    font-size: 0.7em;
+    margin-right: 10px;
+    color: var(--secondary-color);
+    transition: transform 0.2s;
+}
+
+details[open].form-section summary::before { 
+    transform: rotate(90deg); 
+}
+
+details[open].form-section summary {
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .board-section {
@@ -294,7 +325,6 @@ button:hover { opacity: 0.9; }
 .monitor-mini-card.arrived-status { border-left-color: var(--success-color); background: #fafdff; }
 .monitor-mini-card.today-status { border-left-color: var(--warning-color); background: #fffdf9; }
 .monitor-mini-card.late-status { border-left-color: var(--danger-color); background: #fff6f6; animation: pulse-light 2.5s infinite; }
-@keyframes pulse-light { 0% { background-color: #fff6f6; } 50% { background-color: #ffe6e6; } 100% { background-color: #fff6f6; } }
 .monitor-mini-info { display: flex; flex-direction: column; gap: 2px; width: 75%; }
 .monitor-mini-info h3 { margin: 0; font-size: 19px; color: var(--primary-color); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .monitor-mini-info .sub-text { font-size: 13px; color: #666; font-weight: 500; }
@@ -322,6 +352,9 @@ button:hover { opacity: 0.9; }
     .actions button, .actions .btn-upload-inline { width: 100%; justify-content: center; }
     .search-container { flex-direction: column; align-items: flex-start; }
     .search-container input { width: 100%; }
+    
+    /* Riduce i margini del modulo collassato su telefono */
+    details.form-section { padding: 12px; margin-bottom: 5px; }
 }
 </style>
 </head>
@@ -338,8 +371,9 @@ button:hover { opacity: 0.9; }
     <div class="status" id="connectionStatus">Connessione Supabase in corso...</div>
 
     <div class="container">
-        <div class="form-section">
-            <h2 id="formTitle">Nuovo Arrivo</h2>
+        
+        <details class="form-section" id="boatFormDetails">
+            <summary id="formTitle">Nuovo Arrivo</summary>
             <form id="boatForm">
                 <input type="hidden" id="editingBoatId" value="">
                 <div class="form-group">
@@ -382,7 +416,7 @@ button:hover { opacity: 0.9; }
                 <button class="main-btn" type="submit" id="submitBtn">Aggiungi in Bacheca</button>
                 <button type="button" id="cancelEditBtn" style="width:100%; margin-top:8px; background:#7f8c8d; display:none;" onclick="cancelEdit()">Annulla Modifica</button>
             </form>
-        </div>
+        </details>
 
         <div class="board-section">
             <div class="search-container">
@@ -507,6 +541,11 @@ updateClock();
 function formatDate(dateString) {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Controllo apertura automatica del form in base al dispositivo all'avvio
+if (window.innerWidth > 768) {
+    document.getElementById('boatFormDetails').open = true;
 }
 
 function formatSize(length, width) {
@@ -660,6 +699,8 @@ document.getElementById('boatForm').addEventListener('submit', async function(e)
             boatData.photos = [];
             await client.from('boats').insert([boatData]);
             this.reset();
+            // Su smartphone richiudi il modulo dopo il salvataggio per liberare lo schermo
+            if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
         }
         fetchBoats();
     } catch (err) { setStatus("❌ Errore salvataggio.", true); }
@@ -689,31 +730,29 @@ async function uploadPhotosInline(boatId, inputElement) {
 }
 
 async function cancelArrival(id) {
-    if (confirm("⚠️ ATTENZIONE: Vuoi annullare questo arrivo ed eliminare definitivamente la scheda della barca dalla bacheca?")) {
-        setStatus("Annullamento e rimozione in corso...");
+    if (confirm("⚠️ ATTENZIONE: Vuoi annullare questo arrivo ed eliminare definitivamente la scheda dalla bacheca?")) {
+        setStatus("Annullamento in corso...");
         try {
             if(String(id).startsWith('mock_')) {
                 boats = boats.filter(b => b.id !== id);
-                setStatus("Barca demo rimossa con successo.");
+                setStatus("Barca demo rimossa.");
                 renderBoats();
                 return;
             }
-
             const { error } = await client.from('boats').delete().eq('id', id);
             if (error) throw error;
-            
-            setStatus("Arrivo annullato correttamente.");
             fetchBoats();
-        } catch (err) {
-            console.error(err);
-            setStatus("❌ Errore durante l'eliminazione: " + err.message, true);
-        }
+        } catch (err) { setStatus("❌ Errore durante l'eliminazione.", true); }
     }
 }
 
 function startEdit(id) {
     const boat = boats.find(b => b.id === id);
     if (!boat) return;
+    
+    // ESPANDE IL FORM IN AUTOMATICO SE ERA CHIUSO
+    document.getElementById('boatFormDetails').open = true;
+
     document.getElementById('editingBoatId').value = boat.id;
     document.getElementById('boatName').value = boat.name;
     document.getElementById('boatModel').value = boat.model || '';
@@ -723,6 +762,7 @@ function startEdit(id) {
     document.getElementById('boatLength').value = boat.length || '';
     document.getElementById('boatWidth').value = boat.width || '';
     document.getElementById('boatNotes').value = boat.notes || '';
+    
     document.getElementById('formTitle').textContent = "✏️ Modifica Barca";
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.textContent = "Salva Modifiche";
@@ -739,6 +779,9 @@ function cancelEdit() {
     submitBtn.textContent = "Aggiungi in Bacheca";
     submitBtn.classList.remove('edit-mode');
     document.getElementById('cancelEditBtn').style.display = "none";
+    
+    // Su smartphone, se annulla la modifica, comprimi il menu
+    if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
 }
 
 async function markAsArrived(id) {
@@ -785,6 +828,7 @@ function renderBoats() {
     const arrived = filteredBoats.filter(b => b.status === 'arrived');
     const archived = filteredBoats.filter(b => b.status === 'archived');
 
+    // --- INTERFACCIA GESTIONE ---
     const createManagementCard = (boat) => {
         const card = document.createElement('div');
         card.className = `boat-card ${boat.status}`;
@@ -902,15 +946,17 @@ window.addEventListener('resize', () => {
     if (window.innerWidth <= 768) {
         document.getElementById('sectionManagement').style.display = 'block';
         document.getElementById('sectionMonitor').style.display = 'none';
+        document.getElementById('boatFormDetails').open = false; // Forza chiusura su mobile
+    } else {
+        document.getElementById('boatFormDetails').open = true; // Forza apertura su PC
     }
 });
 
-// --- ISCRIZIONE DEL SERVICE WORKER PER ATTIVARE PWA ---
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('PWA: Service Worker registrato con successo!', reg))
-            .catch(err => console.error('PWA: Errore registrazione Service Worker:', err));
+            .then(reg => console.log('PWA attiva.'))
+            .catch(err => console.error(err));
     });
 }
 
