@@ -785,7 +785,6 @@ function renderBoats() {
     const arrived = filteredBoats.filter(b => b.status === 'arrived');
     const archived = filteredBoats.filter(b => b.status === 'archived');
 
-    // --- INTERFACCIA GESTIONE ---
     const createManagementCard = (boat) => {
         const card = document.createElement('div');
         card.className = `boat-card ${boat.status}`;
@@ -843,8 +842,6 @@ function renderBoats() {
         });
     } else { archivedList.innerHTML = '<p class="empty-message">Archivio vuoto.</p>'; }
 
-
-    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH ---
     const todayStr = getTodayString();
     let countToday = 0, countFuture = 0, countArrived = arrived.length;
 
@@ -907,6 +904,15 @@ window.addEventListener('resize', () => {
         document.getElementById('sectionMonitor').style.display = 'none';
     }
 });
+
+// --- ISCRIZIONE DEL SERVICE WORKER PER ATTIVARE PWA ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('PWA: Service Worker registrato con successo!', reg))
+            .catch(err => console.error('PWA: Errore registrazione Service Worker:', err));
+    });
+}
 
 fetchBoats();
 </script>
