@@ -17,6 +17,9 @@
     --bg-color: #f4f4f9;
     --text-color: #333;
     --card-bg: #ffffff;
+    --danger-color: #c0392b;
+    --success-color: #27ae60;
+    --warning-color: #d35400;
 }
 
 body {
@@ -33,8 +36,40 @@ header {
     background-color: var(--primary-color);
     color: white;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
+
+.app-nav {
+    display: flex;
+    gap: 10px;
+    max-width: 1250px;
+    margin: 0 auto 20px auto;
+}
+
+.nav-tab {
+    flex: 2;
+    text-align: center;
+    padding: 14px;
+    background: #e0e0e0;
+    color: #555;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-tab.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.nav-btn-demo {
+    flex: 1;
+    background-color: #8e44ad;
+    color: white;
+}
+.nav-btn-demo:hover { background-color: #9b59b6; opacity: 1; }
 
 .container {
     display: flex;
@@ -82,10 +117,6 @@ h2 {
     align-items: center;
     gap: 10px;
 }
-.search-container label {
-    margin-bottom: 0;
-    white-space: nowrap;
-}
 
 .btn-export {
     background-color: #2c3e50;
@@ -126,9 +157,7 @@ details.archive-section summary::before {
     transition: transform 0.2s;
 }
 
-details[open].archive-section summary::before {
-    transform: rotate(90deg);
-}
+details[open].archive-section summary::before { transform: rotate(90deg); }
 
 .archive-scroll {
     max-height: 600px;
@@ -152,9 +181,7 @@ details[open].archive-section summary::before {
     font-weight: bold;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
+.form-group { margin-bottom: 15px; }
 
 label {
     display: block;
@@ -187,14 +214,8 @@ button {
 }
 
 button:hover { opacity: 0.9; }
-
-.main-btn {
-    width: 100%;
-    margin-top: 5px;
-}
-.main-btn.edit-mode {
-    background-color: #d35400;
-}
+.main-btn { width: 100%; margin-top: 5px; }
+.main-btn.edit-mode { background-color: #d35400; }
 
 .boat-card {
     background: #fff;
@@ -208,34 +229,12 @@ button:hover { opacity: 0.9; }
     gap: 15px;
 }
 
-.boat-card.arrived {
-    border-left-color: #27ae60;
-    background: #f7fff9;
-}
+.boat-card.arrived { border-left-color: var(--success-color); background: #f7fff9; }
+.boat-card.archived { border-left-color: #7f8c8d; background: #fafafa; opacity: 0.9; }
 
-.boat-card.archived {
-    border-left-color: #7f8c8d;
-    background: #fafafa;
-    opacity: 0.9;
-}
-
-.boat-info h3 {
-    margin: 0;
-    color: var(--primary-color);
-}
-
-.boat-model {
-    margin: 2px 0 8px 0;
-    font-size: 14px;
-    color: #666;
-    font-weight: 500;
-}
-
-.boat-info p {
-    margin: 3px 0;
-    color: #555;
-    font-size: 14px;
-}
+.boat-info h3 { margin: 0; color: var(--primary-color); }
+.boat-model { margin: 2px 0 8px 0; font-size: 14px; color: #666; font-weight: 500; }
+.boat-info p { margin: 3px 0; color: #555; font-size: 14px; }
 
 .date-badge {
     display: inline-block;
@@ -249,211 +248,340 @@ button:hover { opacity: 0.9; }
     border: 1px solid #bce4e6;
 }
 
-.boat-card.arrived .date-badge {
-    background-color: #e8f8f5;
-    color: #27ae60;
-    border-color: #a3e4d7;
-}
+.boat-card.arrived .date-badge { background-color: #e8f8f5; color: var(--success-color); border-color: #a3e4d7; }
+.boat-card.archived .date-badge { background-color: #f0f3f4; color: #7f8c8d; border-color: #d5dbdb; }
+.date-badge.late { background-color: #fde8e8; color: var(--danger-color); border-color: #e74c3c; font-weight: 900; }
 
-.boat-card.archived .date-badge {
-    background-color: #f0f3f4;
-    color: #7f8c8d;
-    border-color: #d5dbdb;
-}
+.boat-note { margin-top: 8px !important; padding-top: 8px; border-top: 1px dashed #ccc; font-style: italic; color: #444 !important; }
 
-.date-badge.late {
-    background-color: #fde8e8;
-    color: #c0392b;
-    border-color: #e74c3c;
-    font-weight: 900;
-}
+.photo-gallery { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+.photo-preview { width: 65px; height: 65px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; transition: transform 0.2s; }
+.photo-preview:hover { transform: scale(1.05); }
 
-.boat-note {
-    margin-top: 8px !important;
-    padding-top: 8px;
-    border-top: 1px dashed #ccc;
-    font-style: italic;
-    color: #444 !important;
-}
-
-.photo-gallery {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-
-.photo-preview {
-    width: 65px;
-    height: 65px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.photo-preview:hover {
-    transform: scale(1.05);
-}
-
-/* Pulsante per caricamento foto rapido dentro la card */
-.btn-upload-inline {
-    background-color: #087e8b;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-align: center;
-}
+.btn-upload-inline { background-color: #087e8b; color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-align: center; }
 .btn-upload-inline:hover { opacity: 0.9; }
 
-.actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.btn-arrived { background: #27ae60; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+.btn-arrived { background: var(--success-color); }
 .btn-archive { background: #f39c12; }
 .btn-edit { background: #3498db; }
 
-.status {
-    max-width: 1250px;
-    margin: 0 auto 15px auto;
-    padding: 10px 14px;
+.status { max-width: 1250px; margin: 0 auto 15px auto; padding: 10px 14px; border-radius: 6px; background: #eaf7f8; color: #0b3954; font-weight: bold; }
+.empty-message { color: #777; font-style: italic; }
+.status.error { background: #fde8e8; color: var(--danger-color); border: 1px solid #e74c3c; }
+
+
+/* ======================================================= */
+/* --- STILI MONITOR VERTICALE 32" TOUCH CON SCROLL ------ */
+/* ======================================================= */
+.monitor-container-full {
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.monitor-header {
+    background: #0b3954;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Impedisce all'intestazione di rimpicciolirsi */
+}
+
+.monitor-title h1 { margin: 0; font-size: 36px; letter-spacing: 1px; text-transform: uppercase; }
+.monitor-title p { margin: 3px 0 0 0; font-size: 18px; opacity: 0.9; font-weight: bold; color: #00fff2; }
+
+.monitor-clock { text-align: right; }
+.monitor-clock .time { font-size: 46px; font-weight: 900; color: #00fff2; font-family: monospace; line-height: 1; }
+.monitor-clock .date { font-size: 16px; opacity: 0.8; margin-top: 3px; font-weight: bold; text-transform: capitalize; }
+
+/* AREA SCRENN SCROLLABILE CON IL DITO */
+.monitor-scrollable-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    -webkit-overflow-scrolling: touch; /* Rende lo scroll fluidissimo su tablet/touch */
+}
+
+.monitor-block {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.monitor-block h2 {
+    font-size: 24px;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    border-bottom: 4px solid var(--secondary-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.monitor-block-today h2 { border-bottom-color: var(--warning-color); color: var(--warning-color); }
+.monitor-block-future h2 { border-bottom-color: var(--secondary-color); color: var(--primary-color); }
+.monitor-block-arrived h2 { border-bottom-color: var(--success-color); color: var(--success-color); }
+
+.counter-badge {
+    background: #eee;
+    color: #333;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 800;
+}
+.monitor-block-today .counter-badge { background: var(--warning-color); color: white; }
+.monitor-block-future .counter-badge { background: var(--secondary-color); color: white; }
+.monitor-block-arrived .counter-badge { background: var(--success-color); color: white; }
+
+.monitor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* CARD RETTANGOLARE PICCOLA INTERATTIVA */
+.monitor-mini-card {
+    background: #fff;
+    border-left: 6px solid var(--secondary-color);
+    padding: 12px 14px;
     border-radius: 6px;
-    background: #eaf7f8;
-    color: #0b3954;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer; /* Fa capire che è cliccabile */
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 1px solid #eef1f5;
+}
+
+.monitor-mini-card:active {
+    transform: scale(0.98);
+    background-color: #f4f6f9;
+}
+
+.monitor-mini-card.arrived-status { border-left-color: var(--success-color); background: #fafdff; }
+.monitor-mini-card.today-status { border-left-color: var(--warning-color); background: #fffdf9; }
+.monitor-mini-card.late-status { border-left-color: var(--danger-color); background: #fff6f6; animation: pulse-light 2.5s infinite; }
+
+.monitor-mini-info { display: flex; flex-direction: column; gap: 2px; width: 75%; }
+.monitor-mini-info h3 { margin: 0; font-size: 19px; color: var(--primary-color); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.monitor-mini-info .sub-text { font-size: 13px; color: #666; font-weight: 500; }
+.monitor-mini-info .details { font-size: 14px; color: #222; margin-top: 1px; }
+
+.monitor-mini-mooring { text-align: right; width: 25%; }
+.monitor-mini-mooring .mooring-place { font-size: 16px; font-weight: 900; color: #0b3954; background: #eaf2f8; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+.monitor-mini-card.arrived-status .mooring-place { background: #e8f8f5; color: var(--success-color); }
+.monitor-mini-card.late-status .mooring-place { background: #fde8e8; color: var(--danger-color); }
+.monitor-mini-badge-text { font-size: 11px; font-weight: 900; text-transform: uppercase; margin-top: 4px; display: block; }
+
+/* --------------------------------------------------- */
+/* --- POPUP (MODAL) PER DETTAGLI COMPLETI TOUCH ----- */
+/* --------------------------------------------------- */
+.monitor-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+}
+
+.monitor-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+    width: 85%;
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-top: 10px solid var(--primary-color);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 40px;
     font-weight: bold;
+    color: #666;
+    cursor: pointer;
 }
 
-.empty-message {
-    color: #777;
-    font-style: italic;
+.modal-grid-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #eee;
 }
 
-.status.error {
-    background: #fde8e8;
-    color: #c0392b;
-    border: 1px solid #e74c3c;
+.modal-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #ddd;
 }
 
-@media (max-width: 768px) {
-    body { padding: 12px; }
-    .container { flex-direction: column; }
-    .boat-card { flex-direction: column; }
-    .actions button, .actions .btn-upload-inline { width: 100%; justify-content: center; }
-    .search-container { flex-direction: column; align-items: flex-start; }
-    .search-container input { width: 100%; }
+@media (max-width: 900px) {
+    .monitor-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-   <h1>Marina Porto Antico - Gestione Arrivi</h1>
-</header>
+<nav class="app-nav">
+    <div class="nav-tab active" id="tabManagement" onclick="switchView('management')">🔧 Inserimento e Gestione</div>
+    <div class="nav-tab" id="tabMonitor" onclick="switchView('monitor')">📺 Monitor Ufficio (Bacheca 32")</div>
+    <button class="nav-tab nav-btn-demo" onclick="load40MockBoats()">⚡ Attiva Demo (40 Barche di Prova)</button>
+</nav>
 
-<div class="status" id="connectionStatus">
-   Connessione Supabase in corso...
+<div id="sectionManagement">
+    <div class="status" id="connectionStatus">Connessione Supabase in corso...</div>
+
+    <div class="container">
+        <div class="form-section">
+            <h2 id="formTitle">Nuovo Arrivo</h2>
+            <form id="boatForm">
+                <input type="hidden" id="editingBoatId" value="">
+                <div class="form-group">
+                    <label for="boatName">Nome Barca</label>
+                    <input type="text" id="boatName" required placeholder="Es. Stella Polare">
+                </div>
+                <div class="form-group">
+                    <label for="boatModel">Cantiere / Modello</label>
+                    <input type="text" id="boatModel" placeholder="Es. Beneteau Oceanis 41 / Riva 38">
+                </div>
+                <div class="form-group">
+                    <label for="arrivalDate">Data di Arrivo</label>
+                    <input type="date" id="arrivalDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="mooring">Ormeggio Previsto</label>
+                    <input type="text" id="mooring" required placeholder="Es. Molo A, Posto 12">
+                </div>
+                <div class="form-group">
+                    <label for="boatType">Tipo Barca</label>
+                    <select id="boatType" required>
+                        <option value="">Seleziona</option>
+                        <option value="Motore">Motore</option>
+                        <option value="Vela">Vela</option>
+                        <option value="Catamarano">Catamarano</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="boatLength">Lunghezza (metri)</label>
+                    <input type="number" id="boatLength" step="0.01" min="0" placeholder="Es. 12.50">
+                </div>
+                <div class="form-group">
+                    <label for="boatWidth">Larghezza (metri)</label>
+                    <input type="number" id="boatWidth" step="0.01" min="0" placeholder="Es. 4.20">
+                </div>
+                <div class="form-group">
+                    <label for="boatNotes">Note Operative</label>
+                    <textarea id="boatNotes" rows="3" placeholder="Es. Necessita di assistenza all'ormeggio col gommone..."></textarea>
+                </div>
+                <button class="main-btn" type="submit" id="submitBtn">Aggiungi in Bacheca</button>
+                <button type="button" id="cancelEditBtn" style="width:100%; margin-top:8px; background:#7f8c8d; display:none;" onclick="cancelEdit()">Annulla Modifica</button>
+            </form>
+        </div>
+
+        <div class="board-section">
+            <div class="search-container">
+                <label for="searchDate">🔍 Filtra per Data di Arrivo:</label>
+                <input type="date" id="searchDate" onchange="filterByDate()" oninput="if(!this.value) filterByDate()">
+            </div>
+            <div class="board-column">
+                <h2>1. Barche in Arrivo</h2>
+                <div id="incomingList"></div>
+            </div>
+            <div class="board-column">
+                <h2>2. Barche Arrivate / In Porto</h2>
+                <div id="arrivedList"></div>
+            </div>
+            <details class="archive-section">
+                <summary>3. Archivio Storico (Clicca per espandere)</summary>
+                <div class="archive-scroll">
+                    <button class="btn-export" onclick="exportArchiveToCSV()">📥 Esporta Archivio in Excel (CSV)</button>
+                    <div id="archivedList"></div>
+                </div>
+            </details>
+        </div>
+    </div>
 </div>
 
-<div class="container">
+<div id="sectionMonitor" style="display: none;">
+    <div class="monitor-container-full">
+        <div class="monitor-header">
+            <div class="monitor-title">
+                <h1>Marina Porto Antico</h1>
+                <p>📌 BACHECA DIGITALE IN REAL-TIME</p>
+            </div>
+            <div class="monitor-clock">
+                <div class="time" id="liveClock">00:00:00</div>
+                <div class="date" id="liveDate">--</div>
+            </div>
+        </div>
 
-    <div class="form-section">
-        <h2 id="formTitle">Nuovo Arrivo</h2>
-
-        <form id="boatForm">
-            <input type="hidden" id="editingBoatId" value="">
-
-            <div class="form-group">
-                <label for="boatName">Nome Barca</label>
-                <input type="text" id="boatName" required placeholder="Es. Stella Polare">
+        <div class="monitor-scrollable-area">
+            
+            <div class="monitor-block monitor-block-today">
+                <h2>⛵ IN ARRIVO OGGI / IN RITARDO <span class="counter-badge" id="countToday">0</span></h2>
+                <div class="monitor-grid" id="monitorTodayList"></div>
             </div>
 
-            <div class="form-group">
-                <label for="boatModel">Cantiere / Modello</label>
-                <input type="text" id="boatModel" placeholder="Es. Beneteau Oceanis 41 / Riva 38">
+            <div class="monitor-block monitor-block-future">
+                <h2>📅 PROGRAMMATI NEI PROSSIMI GIORNI <span class="counter-badge" id="countFuture">0</span></h2>
+                <div class="monitor-grid" id="monitorFutureList"></div>
             </div>
 
-            <div class="form-group">
-                <label for="arrivalDate">Data di Arrivo</label>
-                <input type="date" id="arrivalDate" required>
+            <div class="monitor-block monitor-block-arrived">
+                <h2>⚓ IMBARCAZIONI ATTUALMENTE IN PORTO <span class="counter-badge" id="countArrived">0</span></h2>
+                <div class="monitor-grid" id="monitorArrivedList"></div>
             </div>
-
-            <div class="form-group">
-                <label for="mooring">Ormeggio Previsto</label>
-                <input type="text" id="mooring" required placeholder="Es. Molo A, Posto 12">
-            </div>
-
-            <div class="form-group">
-                <label for="boatType">Tipo Barca</label>
-                <select id="boatType" required>
-                    <option value="">Seleziona</option>
-                    <option value="Motore">Motore</option>
-                    <option value="Vela">Vela</option>
-                    <option value="Catamarano">Catamarano</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="boatLength">Lunghezza (metri)</label>
-                <input type="number" id="boatLength" step="0.01" min="0" placeholder="Es. 12.50">
-            </div>
-
-            <div class="form-group">
-                <label for="boatWidth">Larghezza (metri)</label>
-                <input type="number" id="boatWidth" step="0.01" min="0" placeholder="Es. 4.20">
-            </div>
-
-            <div class="form-group">
-                <label for="boatNotes">Note Operative</label>
-                <textarea id="boatNotes" rows="3" placeholder="Es. Necessita di assistenza all'ormeggio col gommone..."></textarea>
-            </div>
-
-            <button class="main-btn" type="submit" id="submitBtn">Aggiungi in Bacheca</button>
-            <button type="button" id="cancelEditBtn" style="width:100%; margin-top:8px; background:#7f8c8d; display:none;" onclick="cancelEdit()">Annulla Modifica</button>
-        </form>
+            
+        </div>
     </div>
+</div>
 
-    <div class="board-section">
-
-        <div class="search-container">
-            <label for="searchDate">🔍 Filtra per Data di Arrivo:</label>
-            <input type="date" id="searchDate" onchange="filterByDate()" oninput="if(!this.value) filterByDate()">
+<div class="monitor-modal" id="monitorModal" onclick="closeMonitorModal()">
+    <div class="monitor-modal-content" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="closeMonitorModal()">&times;</span>
+        <h2 id="modalBoatName" style="font-size:32px; border-bottom:3px solid var(--primary-color); margin-bottom:15px;">-</h2>
+        <div style="font-size: 18px; line-height: 1.6; color: #333;">
+            <p><strong>Cantiere / Modello:</strong> <span id="modalBoatModel">-</span></p>
+            <p><strong>Dimensioni Totali:</strong> <span id="modalBoatSize">-</span></p>
+            <p><strong>Postazione Assegnata:</strong> <span id="modalBoatMooring" style="color:var(--secondary-color); font-weight:bold;">-</span></p>
+            <p><strong>Data di Arrivo:</strong> <span id="modalBoatDate">-</span></p>
+            <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #ccc; margin-top: 15px;">
+                <strong>Note Operative / Segnalazioni:</strong><br><span id="modalBoatNotes">-</span>
+            </p>
         </div>
-
-        <div class="board-column">
-            <h2>1. Barche in Arrivo</h2>
-            <div id="incomingList"></div>
-        </div>
-
-        <div class="board-column">
-            <h2>2. Barche Arrivate / In Porto</h2>
-            <div id="arrivedList"></div>
-        </div>
-
-        <details class="archive-section">
-            <summary>3. Archivio Storico (Clicca per espandere)</summary>
-            <div class="archive-scroll">
-                <button class="btn-export" onclick="exportArchiveToCSV()">📥 Esporta Archivio in Excel (CSV)</button>
-                <div id="archivedList"></div>
-            </div>
-        </details>
-
+        <div id="modalPhotosContainer" class="modal-grid-photos"></div>
     </div>
-
 </div>
 
 <script>
@@ -470,26 +598,44 @@ const arrivedList = document.getElementById('arrivedList');
 const archivedList = document.getElementById('archivedList');
 const connectionStatus = document.getElementById('connectionStatus');
 
+const monitorTodayList = document.getElementById('monitorTodayList');
+const monitorFutureList = document.getElementById('monitorFutureList');
+const monitorArrivedList = document.getElementById('monitorArrivedList');
+
 function setStatus(message, isError = false) {
     connectionStatus.textContent = message; 
-    if(isError) {
-        connectionStatus.classList.add('error');
+    if(isError) { connectionStatus.classList.add('error'); } else { connectionStatus.classList.remove('error'); }
+}
+
+function switchView(view) {
+    if (view === 'management') {
+        document.getElementById('sectionManagement').style.display = 'block';
+        document.getElementById('sectionMonitor').style.display = 'none';
+        document.getElementById('tabManagement').classList.add('active');
+        document.getElementById('tabMonitor').classList.remove('active');
     } else {
-        connectionStatus.classList.remove('error');
+        document.getElementById('sectionManagement').style.display = 'none';
+        document.getElementById('sectionMonitor').style.display = 'block';
+        document.getElementById('tabManagement').classList.remove('active');
+        document.getElementById('tabMonitor').classList.add('active');
     }
 }
 
+function updateClock() {
+    const now = new Date();
+    document.getElementById('liveClock').textContent = now.toLocaleTimeString('it-IT', { hour12: false });
+    document.getElementById('liveDate').textContent = now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
 function formatDate(dateString) {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('it-IT', {
-        day: '2-digit', month: '2-digit', year: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function formatSize(length, width) {
-    const l = length ? `${length} m` : '-';
-    const w = width ? `${width} m` : '-';
-    return `${l} x ${w}`;
+    return `${length ? length + 'm' : '-'} x ${width ? width + 'm' : '-'}`;
 }
 
 function filterByDate() {
@@ -504,39 +650,120 @@ async function fetchBoats() {
             .select('*')
             .order('arrival_date', { ascending: true });
 
-        if (error) {
-            console.error('Errore Supabase DB:', error);
-            setStatus("Errore database: " + error.message, true);
-            return;
-        }
-
+        if (error) { setStatus("Errore database: " + error.message, true); return; }
         boats = data || [];
         setStatus("✅ Connesso. Dati aggiornati in tempo reale.");
         renderBoats();
-
-    } catch (err) {
-        console.error('Eccezione JS:', err);
-        setStatus("❌ Errore critico di comunicazione con Supabase.", true);
-    }
+    } catch (err) { setStatus("❌ Errore critico.", true); }
 }
 
-// Canale Realtime attivo
 client
     .channel('realtime-boats')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'boats' }, () => {
-        fetchBoats();
-    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'boats' }, () => { fetchBoats(); })
     .subscribe();
 
-// Gestione form standard (Solo Dati, senza foto)
+function getTodayString() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// SIMULATORE COMPLETO PER TESTARE 40 IMBARCAZIONI SUL 32 POLLICI
+function load40MockBoats() {
+    const todayStr = getTodayString();
+    
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomStr = tomorrow.toISOString().split('T')[0];
+    
+    const nextDays = new Date(); nextDays.setDate(nextDays.getDate() + 3);
+    const nextStr = nextDays.toISOString().split('T')[0];
+
+    const mockData = [];
+    const boatNames = [
+        "Azzurra", "Black Pearl", "Kismet", "Ocean Drive", "Lady Maura", "Marlin Blue", "Destiny", "Sirena", "Poseidon", "Galeone",
+        "Estasi", "Albatros", "Wave Runner", "Sea Breeze", "White Shark", "Freedom", "Vento del Sud", "Orsa Maggiore", "Pegasus", "Karma",
+        "San Giuseppe", "Nautilus", "Isola Bella", "Calypso", "Stella del Mare", "Enterprise", "Gipsy", "Anemone", "Flyer", "Serenità",
+        "Libertà", "Mediterraneo", "Scorpio", "Andromeda", "Zeus", "Aurora", "Bora", "Fenice", "Ghibli", "Odissea"
+    ];
+    const models = ["Beneteau 41", "Riva 38 Rivamare", "Pershing 62", "Bavaria C45", "Lagoon 42", "Azimut Fly 50", "Ferretti 720", "Jeanneau Sun Odyssey"];
+    const types = ["Vela", "Motore", "Catamarano"];
+    
+    for (let i = 1; i <= 40; i++) {
+        let status = 'incoming';
+        let date = todayStr;
+        let photos = [];
+        
+        if (i <= 6) { date = "2026-05-01"; } 
+        else if (i > 6 && i <= 15) { date = todayStr; } 
+        else if (i > 15 && i <= 26) { date = (i % 2 === 0) ? tomStr : nextStr; } 
+        else { 
+            status = 'arrived'; 
+            date = todayStr;
+            // Inseriamo dei finti link di immagini per vedere la galleria nel popup touch
+            photos = ["https://picsum.photos/id/10/800/600", "https://picsum.photos/id/11/800/600"];
+        }
+
+        mockData.push({
+            id: 'mock_' + i,
+            name: boatNames[i-1],
+            model: models[i % models.length],
+            type: types[i % types.length],
+            arrival_date: date,
+            mooring: `Molo ${String.fromCharCode(65 + (i % 4))}, Posto ${i + 5}`,
+            length: (10 + (i * 0.35)).toFixed(2),
+            width: (3 + (i * 0.12)).toFixed(2),
+            status: status,
+            notes: (i % i === 0 || i % 5 === 0) ? "Richiede assistenza all'ormeggio col gommone. Controllare contatore elettrico A3." : "Nessuna segnalazione.",
+            photos: photos
+        });
+    }
+
+    boats = mockData;
+    setStatus("⚡ MODALITÀ DEMO: 40 imbarcazioni pronte sul monitor!");
+    renderBoats();
+    switchView('monitor');
+}
+
+// FUNZIONE TOUCH: APRE IL MODAL SUL MONITOR
+function openMonitorModal(boatId) {
+    const boat = boats.find(b => b.id === boatId);
+    if (!boat) return;
+
+    document.getElementById('modalBoatName').textContent = `${boat.name} (${boat.type || 'N/D'})`;
+    document.getElementById('modalBoatModel').textContent = boat.model ? boat.model : 'Non specificato';
+    document.getElementById('modalBoatSize').textContent = formatSize(boat.length, boat.width);
+    document.getElementById('modalBoatMooring').textContent = boat.mooring;
+    document.getElementById('modalBoatDate').textContent = formatDate(boat.arrival_date);
+    document.getElementById('modalBoatNotes').textContent = boat.notes ? boat.notes : 'Nessuna nota presente.';
+
+    const photoContainer = document.getElementById('modalPhotosContainer');
+    photoContainer.innerHTML = '';
+
+    if (boat.photos && boat.photos.length > 0) {
+        boat.photos.forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'modal-img';
+            img.onclick = () => window.open(url, '_blank');
+            photoContainer.appendChild(img);
+        });
+    } else {
+        photoContainer.innerHTML = '<p style="color:#777; font-style:italic;">Nessuna fotografia caricata dagli ormeggiatori per questa imbarcazione.</p>';
+    }
+
+    document.getElementById('monitorModal').style.display = 'flex';
+}
+
+function closeMonitorModal() {
+    document.getElementById('monitorModal').style.display = 'none';
+}
+
 document.getElementById('boatForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     const boatId = document.getElementById('editingBoatId').value;
     const isEditMode = boatId !== "";
-    
-    setStatus(isEditMode ? "Aggiornamento in corso..." : "Salvataggio in corso...");
-
     try {
         const lengthVal = document.getElementById('boatLength').value;
         const widthVal = document.getElementById('boatWidth').value;
@@ -553,33 +780,23 @@ document.getElementById('boatForm').addEventListener('submit', async function(e)
         };
 
         if (isEditMode) {
-            const { error } = await client.from('boats').update(boatData).eq('id', boatId);
-            if (error) throw error;
+            await client.from('boats').update(boatData).eq('id', boatId);
             cancelEdit(); 
         } else {
             boatData.status = 'incoming';
-            boatData.photos = []; // Inizializza array vuoto per le foto
-            const { error } = await client.from('boats').insert([boatData]);
-            if (error) throw error;
+            boatData.photos = [];
+            await client.from('boats').insert([boatData]);
             this.reset();
         }
-
         fetchBoats();
-        
-    } catch (err) {
-        console.error('Errore:', err);
-        setStatus("❌ Errore: " + err.message, true);
-    }
+    } catch (err) { setStatus("❌ Errore salvataggio.", true); }
 });
 
-// NUOVA FUNZIONE: CARICAMENTO FOTO IMMEDIATO DALLA CARD SULLA DESTRA
 async function uploadPhotosInline(boatId, inputElement) {
     const files = inputElement.files;
     if (!files || files.length === 0) return;
-
-    setStatus("Caricamento immagini in corso...");
+    setStatus("Salvataggio file...");
     try {
-        // Cerca la barca nell'array locale per recuperare eventuali foto già caricate in precedenza
         const targetBoat = boats.find(b => b.id === boatId);
         let currentPhotos = targetBoat && targetBoat.photos ? [...targetBoat.photos] : [];
 
@@ -588,40 +805,19 @@ async function uploadPhotosInline(boatId, inputElement) {
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-            const { data: uploadData, error: uploadError } = await client.storage
-                .from('boat-photos')
-                .upload(fileName, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: urlData } = client.storage
-                .from('boat-photos')
-                .getPublicUrl(fileName);
-
+            await client.storage.from('boat-photos').upload(fileName, file);
+            const { data: urlData } = client.storage.from('boat-photos').getPublicUrl(fileName);
             currentPhotos.push(urlData.publicUrl);
         }
 
-        // Aggiorna istantaneamente la riga specifica sul DB di Supabase
-        const { error: dbError } = await client
-            .from('boats')
-            .update({ photos: currentPhotos })
-            .eq('id', boatId);
-
-        if (dbError) throw dbError;
-
-        setStatus("📷 Foto salvate con successo!");
+        await client.from('boats').update({ photos: currentPhotos }).eq('id', boatId);
         fetchBoats();
-
-    } catch (err) {
-        console.error("Errore caricamento foto:", err);
-        setStatus("❌ Errore durante il salvataggio delle foto: " + err.message, true);
-    }
+    } catch (err) { setStatus("❌ Errore caricamento foto.", true); }
 }
 
 function startEdit(id) {
     const boat = boats.find(b => b.id === id);
     if (!boat) return;
-
     document.getElementById('editingBoatId').value = boat.id;
     document.getElementById('boatName').value = boat.name;
     document.getElementById('boatModel').value = boat.model || '';
@@ -631,13 +827,11 @@ function startEdit(id) {
     document.getElementById('boatLength').value = boat.length || '';
     document.getElementById('boatWidth').value = boat.width || '';
     document.getElementById('boatNotes').value = boat.notes || '';
-
     document.getElementById('formTitle').textContent = "✏️ Modifica Barca";
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.textContent = "Salva Modifiche";
     submitBtn.classList.add('edit-mode');
     document.getElementById('cancelEditBtn').style.display = "block";
-    
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -652,65 +846,39 @@ function cancelEdit() {
 }
 
 async function markAsArrived(id) {
-    setStatus("Aggiornamento stato (In Porto)...");
-    try {
-        const { error } = await client.from('boats').update({ status: 'arrived' }).eq('id', id);
-        if (error) throw error;
-        fetchBoats();
-    } catch (err) {
-        setStatus("❌ Errore nell'aggiornamento.", true);
-    }
+    await client.from('boats').update({ status: 'arrived' }).eq('id', id);
+    fetchBoats();
 }
 
 async function archiveBoat(id) {
-    setStatus("Archiviazione pratica in corso...");
-    try {
-        const { error } = await client.from('boats').update({ status: 'archived' }).eq('id', id);
-        if (error) throw error;
-        fetchBoats();
-    } catch (err) {
-        setStatus("❌ Errore durante l'archiviazione.", true);
-    }
+    await client.from('boats').update({ status: 'archived' }).eq('id', id);
+    fetchBoats();
 }
 
 function exportArchiveToCSV() {
     const archivedBoats = boats.filter(b => b.status === 'archived');
-    if (archivedBoats.length === 0) {
-        alert("L'archivio è vuoto. Non ci sono dati da esportare.");
-        return;
-    }
-
-    let csvContent = "\uFEFFNome Barca;Cantiere-Modello;Data Arrivo;Ormeggio;Tipo;Lunghezza (m);Larghezza (m);Note;Link Foto\n";
-
+    let csvContent = "\uFEFFNome Barca;Cantiere-Modello;Data Arrivo;Ormeggio;Tipo;Lunghezza (m);Larghezza (m);Note\n";
     archivedBoats.forEach(b => {
-        const name = b.name.replace(/;/g, ",");
-        const model = (b.model || '').replace(/;/g, ",");
-        const date = formatDate(b.arrival_date);
-        const mooring = b.mooring.replace(/;/g, ",");
-        const type = b.type;
-        const length = b.length || '-';
-        const width = b.width || '-';
-        const notes = (b.notes || '').replace(/[\n\r;]/g, " ");
-        const photosLinks = (b.photos || []).join(" | ");
-
-        csvContent += `${name};${model};${date};${mooring};${type};${length};${width};${notes};${photosLinks}\n`;
+        csvContent += `${b.name};${b.model || ''};${formatDate(b.arrival_date)};${b.mooring};${b.type};${b.length || '-'};${b.width || '-'};${(b.notes || '').replace(/[\n\r;]/g, " ")}\n`;
     });
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Archivio_Arrivi_Marina_Porto_Antico.csv`);
+    link.setAttribute("download", `Archivio_Arrivi.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
 }
 
 function renderBoats() {
     incomingList.innerHTML = '';
     arrivedList.innerHTML = '';
     archivedList.innerHTML = '';
+
+    monitorTodayList.innerHTML = '';
+    monitorFutureList.innerHTML = '';
+    monitorArrivedList.innerHTML = '';
 
     let filteredBoats = boats;
     if (filterDateValue) {
@@ -721,106 +889,117 @@ function renderBoats() {
     const arrived = filteredBoats.filter(b => b.status === 'arrived');
     const archived = filteredBoats.filter(b => b.status === 'archived');
 
-    const createCard = (boat) => {
+    // --- INTERFACCIA GESTIONE ---
+    const createManagementCard = (boat) => {
         const card = document.createElement('div');
         card.className = `boat-card ${boat.status}`;
-        
-        let isLate = false;
-        if (boat.status === 'incoming' && boat.arrival_date) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const [year, month, day] = boat.arrival_date.split('-');
-            const arrival = new Date(year, month - 1, day);
-            
-            if (arrival < today) isLate = true;
-        }
+        const todayStr = getTodayString();
+        let isLate = boat.status === 'incoming' && boat.arrival_date && boat.arrival_date < todayStr;
 
         let cardHTML = `
             <div class="boat-info">
-                <h3>${boat.name} <span style="font-size: 14px; font-weight: normal; color: #555;">(${boat.type || 'N/D'})</span></h3>
+                <h3>${boat.name} <span style="font-size: 13px; font-weight: normal; color: #666;">(${boat.type || 'N/D'})</span></h3>
                 <div class="boat-model">${boat.model ? boat.model : 'Modello non specificato'}</div>
-                
-                <div class="date-badge ${isLate ? 'late' : ''}">
-                    📅 Arrivo: ${formatDate(boat.arrival_date)} ${isLate ? ' ⚠️ IN RITARDO' : ''}
-                </div>
-                
+                <div class="date-badge ${isLate ? 'late' : ''}">📅 Arrivo: ${formatDate(boat.arrival_date)} ${isLate ? ' ⚠️ IN RITARDO' : ''}</div>
                 <p><strong>Ormeggio:</strong> ${boat.mooring}</p>
                 <p><strong>Dimensioni:</strong> ${formatSize(boat.length, boat.width)}</p>
         `;
-        
         if (boat.notes && boat.notes.trim() !== '') {
-            const formattedNotes = boat.notes.replace(/\n/g, '<br>');
-            cardHTML += `<p class="boat-note"><strong>Note:</strong><br>${formattedNotes}</p>`;
+            cardHTML += `<p class="boat-note"><strong>Note:</strong><br>${boat.notes.replace(/\n/g, '<br>')}</p>`;
         }
-
-        // Visualizzazione della galleria fotografica (se presente)
         if (boat.photos && boat.photos.length > 0) {
             cardHTML += `<div class="photo-gallery">`;
-            boat.photos.forEach(photoUrl => {
-                cardHTML += `
-                    <a href="${photoUrl}" target="_blank">
-                        <img src="${photoUrl}" class="photo-preview" alt="Foto ormeggio">
-                    </a>`;
-            });
+            boat.photos.forEach(p => { cardHTML += `<a href="${p}" target="_blank"><img src="${p}" class="photo-preview"></a>`; });
             cardHTML += `</div>`;
         }
-
-        cardHTML += `
-            </div>
-            <div class="actions">
-                ${boat.status === 'incoming' ? `
-                    <button class="btn-edit" onclick="startEdit('${boat.id}')">✏️ Modifica</button>
-                    <button class="btn-arrived" onclick="markAsArrived('${boat.id}')">✓ Arrivata</button>
-                ` : ''}
-                
-                ${boat.status === 'arrived' ? `
-                    <label class="btn-upload-inline">
-                        📷 Aggiungi Foto
-                        <input type="file" accept="image/*" multiple style="display: none;" onchange="uploadPhotosInline('${boat.id}', this)">
-                    </label>
-                    <button class="btn-archive" onclick="archiveBoat('${boat.id}')">📁 Archivia</button>
-                ` : ''}
-                
-                ${boat.status === 'archived' ? `<span style="color: #7f8c8d; font-size: 13px; font-weight: bold;">Archiviata</span>` : ''}
-            </div>
-        `;
-        
+        cardHTML += `</div><div class="actions">
+            ${boat.status === 'incoming' ? `
+                <button class="btn-edit" onclick="startEdit('${boat.id}')">✏️ Modifica</button>
+                <button class="btn-arrived" onclick="markAsArrived('${boat.id}')">✓ Arrivata</button>
+            ` : ''}
+            ${boat.status === 'arrived' ? `
+                <label class="btn-upload-inline">📷 Foto<input type="file" accept="image/*" multiple style="display: none;" onchange="uploadPhotosInline('${boat.id}', this)"></label>
+                <button class="btn-archive" onclick="archiveBoat('${boat.id}')">📁 Archivia</button>
+            ` : ''}
+        </div>`;
         card.innerHTML = cardHTML;
         return card;
     };
 
-    incoming.forEach(boat => incomingList.appendChild(createCard(boat)));
-    arrived.forEach(boat => arrivedList.appendChild(createCard(boat)));
+    incoming.forEach(b => incomingList.appendChild(createManagementCard(b)));
+    arrived.forEach(b => arrivedList.appendChild(createManagementCard(b)));
 
-    if (archived.length === 0) {
-        archivedList.innerHTML = '<p class="empty-message">Nessun record corrispondente in archivio.</p>';
-    } else {
+    if (archived.length > 0) {
         const yearsGroup = {};
-        archived.forEach(boat => {
-            const year = new Date(boat.arrival_date).getFullYear();
+        archived.forEach(b => {
+            const year = new Date(b.arrival_date).getFullYear();
             if (!yearsGroup[year]) yearsGroup[year] = [];
-            yearsGroup[year].push(boat);
+            yearsGroup[year].push(b);
         });
-
-        const sortedYears = Object.keys(yearsGroup).sort((a, b) => b - a);
-
-        sortedYears.forEach(year => {
-            const yearBlock = document.createElement('div');
-            yearBlock.className = 'archive-year-block';
-            
-            const yearTitle = document.createElement('div');
-            yearTitle.className = 'archive-year-title';
-            yearTitle.textContent = `Stagione ${year}`;
-            yearBlock.appendChild(yearTitle);
-
-            yearsGroup[year].forEach(boat => {
-                yearBlock.appendChild(createCard(boat));
-            });
-
-            archivedList.appendChild(yearBlock);
+        Object.keys(yearsGroup).sort((a,b) => b-a).forEach(year => {
+            const block = document.createElement('div'); block.className = 'archive-year-block';
+            const title = document.createElement('div'); title.className = 'archive-year-title'; title.textContent = `Stagione ${year}`;
+            block.appendChild(title);
+            yearsGroup[year].forEach(b => block.appendChild(createManagementCard(b)));
+            archivedList.appendChild(block);
         });
-    }
+    } else { archivedList.innerHTML = '<p class="empty-message">Archivio vuoto.</p>'; }
+
+
+    // --- INTERFACCIA 2: MONITOR DA 32" VERTICALE TOUCH ---
+    const todayStr = getTodayString();
+    let countToday = 0, countFuture = 0, countArrived = arrived.length;
+
+    const createMonitorMiniCard = (boat, typeOfIncomingStatus) => {
+        const card = document.createElement('div');
+        card.className = `monitor-mini-card ${typeOfIncomingStatus}-status`;
+        
+        // Colleghiamo la funzione touch che apre il pop-up informativo
+        card.setAttribute('onclick', `openMonitorModal('${boat.id}')`);
+
+        let badgeText = '';
+        if (typeOfIncomingStatus === 'late') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--danger-color)">⚠️ IN RITARDO</span>';
+        if (typeOfIncomingStatus === 'today') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--warning-color)">⏰ OGGI</span>';
+        if (typeOfIncomingStatus === 'arrived') badgeText = '<span class="monitor-mini-badge-text" style="color:var(--success-color)">● IN PORTO</span>';
+
+        card.innerHTML = `
+            <div class="monitor-mini-info">
+                <h3>${boat.name} <span style="font-size:13px; font-weight:normal; color:#666;">(${boat.type || '-'})</span></h3>
+                <div class="sub-text">${boat.model ? boat.model : 'Modello NC'} | ${formatSize(boat.length, boat.width)}</div>
+                <div class="details">Previsto: <strong>${formatDate(boat.arrival_date)}</strong></div>
+                ${badgeText}
+            </div>
+            <div class="monitor-mini-mooring">
+                <span class="mooring-place">${boat.mooring}</span>
+            </div>
+        `;
+        return card;
+    };
+
+    incoming.forEach(boat => {
+        if (boat.arrival_date < todayStr) {
+            monitorTodayList.appendChild(createMonitorMiniCard(boat, 'late'));
+            countToday++;
+        } else if (boat.arrival_date === todayStr) {
+            monitorTodayList.appendChild(createMonitorMiniCard(boat, 'today'));
+            countToday++;
+        } else {
+            monitorFutureList.appendChild(createMonitorMiniCard(boat, 'future'));
+            countFuture++;
+        }
+    });
+
+    arrived.forEach(boat => {
+        monitorArrivedList.appendChild(createMonitorMiniCard(boat, 'arrived'));
+    });
+
+    document.getElementById('countToday').textContent = countToday;
+    document.getElementById('countFuture').textContent = countFuture;
+    document.getElementById('countArrived').textContent = countArrived;
+
+    if (countToday === 0) monitorTodayList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo programmato o in ritardo per oggi.</p>';
+    if (countFuture === 0) monitorFutureList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessun arrivo pianificato nei prossimi giorni.</p>';
+    if (countArrived === 0) monitorArrivedList.innerHTML = '<p class="empty-message" style="grid-column: span 2; padding:10px;">Nessuna imbarcazione presente agli ormeggi.</p>';
 
     if(incoming.length === 0) incomingList.innerHTML = '<p class="empty-message">Nessun arrivo previsto trovato.</p>';
     if(arrived.length === 0) arrivedList.innerHTML = '<p class="empty-message">Nessuna barca attualmente registrata in porto.</p>';
@@ -830,5 +1009,3 @@ fetchBoats();
 </script>
 </body>
 </html>
-
-```
