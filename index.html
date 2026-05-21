@@ -868,16 +868,25 @@ window.toggleSubsequent = function() {
     }
 };
 
+// Memorizza lo stato iniziale dello schermo (mobile o desktop)
+let isMobileView = window.innerWidth <= 768;
+
 window.addEventListener('resize', () => {
-    if (window.innerWidth <= 768) {
-        document.getElementById('sectionManagement').style.display = 'block';
-        document.getElementById('sectionMonitor').style.display = 'none';
-        document.getElementById('boatFormDetails').open = false; 
-    } else {
-        document.getElementById('boatFormDetails').open = true; 
+    const currentlyMobile = window.innerWidth <= 768;
+    
+    // Esegue le modifiche SOLO se si passa effettivamente da Desktop a Mobile o viceversa
+    if (currentlyMobile !== isMobileView) {
+        isMobileView = currentlyMobile; // Aggiorna lo stato
+        
+        if (isMobileView) {
+            document.getElementById('sectionManagement').style.display = 'block';
+            document.getElementById('sectionMonitor').style.display = 'none';
+            document.getElementById('boatFormDetails').open = false; 
+        } else {
+            document.getElementById('boatFormDetails').open = true; 
+        }
     }
 });
-
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('PWA SW non trovato.')); });
 }
