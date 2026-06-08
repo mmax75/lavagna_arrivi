@@ -8,7 +8,10 @@
 <link rel="manifest" href="manifest.json"> 
 <meta name="theme-color" content="#0b3954">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- FIREBASE SDK (compat) - sostituisce Supabase -->
+<script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.14.0/firebase-storage-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -278,7 +281,7 @@ button:hover { opacity: 0.9; }
 </nav>
 
 <div id="sectionManagement">
-    <div class="status" id="connectionStatus">Connessione Supabase in corso...</div>
+    <div class="status" id="connectionStatus">Connessione Firebase in corso...</div>
     <div class="container">
         
         <details class="form-section" id="boatFormDetails">
@@ -404,9 +407,24 @@ button:hover { opacity: 0.9; }
 </div>
 
 <script>
-const SUPABASE_URL = 'https://dxpuuibqngbpfepxaubn.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_hM7hzWLEkPsLw4mlrbExZw_oi0TaTYc';
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* =========================================================
+   CONFIGURAZIONE FIREBASE
+   Sostituisci i valori qui sotto con quelli del TUO progetto
+   (Console Firebase > Impostazioni progetto > Le tue app > Config)
+   ========================================================= */
+const firebaseConfig = {
+    apiKey: "INSERISCI_LA_TUA_API_KEY",
+    authDomain: "IL_TUO_PROGETTO.firebaseapp.com",
+    projectId: "IL_TUO_PROGETTO",
+    storageBucket: "IL_TUO_PROGETTO.firebasestorage.app",
+    messagingSenderId: "INSERISCI_SENDER_ID",
+    appId: "INSERISCI_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+const boatsCol = db.collection('boats');
 
 let boats = [];
 let filterDateValue = ""; 
@@ -462,17 +480,26 @@ function filterByDate() {
     renderBoats();
 }
 
+// Lettura una-tantum (usata dopo le scritture e dal refresh periodico)
 async function fetchBoats() {
     try {
-        const { data, error } = await client.from('boats').select('*').order('arrival_date', { ascending: true });
-        if (error) { setStatus("Errore database: " + error.message, true); return; }
-        boats = data || [];
+        const snapshot = await boatsCol.orderBy('arrival_date', 'asc').get();
+        boats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setStatus("✅ Connesso. Dati aggiornati in tempo reale.");
         renderBoats();
-    } catch (err) { setStatus("❌ Errore critico.", true); }
+    } catch (err) { setStatus("❌ Errore database: " + err.message, true); }
 }
 
-client.channel('realtime-boats').on('postgres_changes', { event: '*', schema: 'public', table: 'boats' }, () => { fetchBoats(); }).subscribe();
+// Listener real-time: rimpiazza il canale realtime di Supabase.
+// Aggiorna automaticamente la bacheca ad ogni modifica del database.
+boatsCol.orderBy('arrival_date', 'asc').onSnapshot(
+    (snapshot) => {
+        boats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setStatus("✅ Connesso. Dati aggiornati in tempo reale.");
+        renderBoats();
+    },
+    (err) => { setStatus("❌ Errore connessione real-time: " + err.message, true); }
+);
 
 function getTodayString() {
     const now = new Date();
@@ -591,18 +618,18 @@ document.getElementById('boatForm').addEventListener('submit', async function(e)
         };
 
         if (isEditMode) {
-// ... il resto del codice prosegue uguale
-            await client.from('boats').update(boatData).eq('id', boatId);
+            await boatsCol.doc(boatId).update(boatData);
             cancelEdit(); 
         } else {
             boatData.status = 'incoming';
             boatData.photos = [];
-            await client.from('boats').insert([boatData]);
+            await boatsCol.add(boatData);
             this.reset();
             if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
         }
+        // onSnapshot aggiorna automaticamente; fetchBoats() come sicurezza extra.
         fetchBoats();
-    } catch (err) { setStatus("❌ Errore salvataggio.", true); }
+    } catch (err) { setStatus("❌ Errore salvataggio: " + err.message, true); }
 });
 
 async function uploadPhotosInline(boatId, inputElement) {
@@ -615,13 +642,14 @@ async function uploadPhotosInline(boatId, inputElement) {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const fileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.${file.name.split('.').pop()}`;
-            await client.storage.from('boat-photos').upload(fileName, file);
-            const { data: urlData } = client.storage.from('boat-photos').getPublicUrl(fileName);
-            currentPhotos.push(urlData.publicUrl);
+            const fileRef = storage.ref().child(`boat-photos/${fileName}`);
+            await fileRef.put(file);
+            const url = await fileRef.getDownloadURL();
+            currentPhotos.push(url);
         }
-        await client.from('boats').update({ photos: currentPhotos }).eq('id', boatId);
+        await boatsCol.doc(boatId).update({ photos: currentPhotos });
         fetchBoats();
-    } catch (err) { setStatus("❌ Errore caricamento foto.", true); }
+    } catch (err) { setStatus("❌ Errore caricamento foto: " + err.message, true); }
 }
 
 async function cancelArrival(id) {
@@ -629,10 +657,9 @@ async function cancelArrival(id) {
         setStatus("Annullamento in corso...");
         try {
             if(String(id).startsWith('mock_')) { boats = boats.filter(b => b.id !== id); setStatus("Barca demo rimossa."); renderBoats(); return; }
-            const { error } = await client.from('boats').delete().eq('id', id);
-            if (error) throw error;
+            await boatsCol.doc(id).delete();
             fetchBoats();
-        } catch (err) { setStatus("❌ Errore durante l'eliminazione.", true); }
+        } catch (err) { setStatus("❌ Errore durante l'eliminazione: " + err.message, true); }
     }
 }
 
@@ -670,8 +697,14 @@ function cancelEdit() {
     if (window.innerWidth <= 768) { document.getElementById('boatFormDetails').open = false; }
 }
 
-async function markAsArrived(id) { await client.from('boats').update({ status: 'arrived' }).eq('id', id); fetchBoats(); }
-async function archiveBoat(id) { await client.from('boats').update({ status: 'archived' }).eq('id', id); fetchBoats(); }
+async function markAsArrived(id) {
+    try { await boatsCol.doc(id).update({ status: 'arrived' }); fetchBoats(); }
+    catch (err) { setStatus("❌ Errore: " + err.message, true); }
+}
+async function archiveBoat(id) {
+    try { await boatsCol.doc(id).update({ status: 'archived' }); fetchBoats(); }
+    catch (err) { setStatus("❌ Errore: " + err.message, true); }
+}
 
 function exportArchiveToExcel() {
     const archivedBoats = boats.filter(b => b.status === 'archived');
@@ -891,11 +924,8 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('PWA SW non trovato.')); });
 }
 
-// === AVVIO APPLICAZIONE ===
-fetchBoats();
-
 // === REFRESH SOFT PERIODICO (Ogni 30 Minuti) ===
-// Ricalcola il calendario, le date e sincronizza i dati da Supabase senza ricaricare la pagina web.
+// Ricalcola il calendario, le date e sincronizza i dati da Firebase senza ricaricare la pagina web.
 setInterval(() => {
     console.log("Auto-refresh periodico dei dati e delle date...");
     fetchBoats();
